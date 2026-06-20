@@ -51,14 +51,40 @@ export async function fetchProducts() {
 
 export async function fetchProduct(handle) {
   try {
-    // Use /products.json?handle= so we get full image objects with alt text.
-    // The /products/{handle}.js endpoint only returns image URLs as plain strings —
-    // no alt text available there, which we need for the color gallery feature.
-    const res = await fetch(`/products/${handle}.json`);
-    if (!res.ok) throw new Error('Failed to fetch Shopify product');
-    const data = await res.json();
-    const product = data.product;
+    // Fetch both the AJAX .js API (contains availability status) and the .json API (contains image alt text)
+    const [jsRes, jsonRes] = await Promise.all([
+      fetch(`/products/${handle}.js`).catch(() => null),
+      fetch(`/products/${handle}.json`).catch(() => null)
+    ]);
+
+    if (!jsonRes || !jsonRes.ok) throw new Error('Failed to fetch Shopify product JSON');
+    const jsonData = await jsonRes.json();
+    const product = jsonData.product;
     if (!product) return null;
+
+    // Try parsing the AJAX data for availability mapping
+    let jsData = null;
+    if (jsRes && jsRes.ok) {
+      try {
+        jsData = await jsRes.json();
+      } catch (e) {
+        console.warn('Failed to parse Shopify AJAX JS data:', e);
+      }
+    }
+
+    // Map availability status from the AJAX endpoint into the variants
+    if (jsData && jsData.variants) {
+      product.available = jsData.available;
+      product.variants.forEach(v => {
+        const jsVariant = jsData.variants.find(jsV => jsV.id.toString() === v.id.toString());
+        v.available = jsVariant ? jsVariant.available : true;
+      });
+    } else {
+      product.available = true;
+      product.variants.forEach(v => {
+        v.available = true;
+      });
+    }
 
     // /products.json returns prices as INR decimal strings ("1400.00") — no /100 needed.
     const price = parseFloat(product.variants[0].price);
@@ -90,6 +116,12 @@ export async function fetchProduct(handle) {
     //   3. If the alt slug CONTAINS the color slug → add to that color's list.
     //   4. Fallback in UI: if a color has zero matched images, show all images.
     // ─────────────────────────────────────────────────────────────────────────
+    console.log(`[shopify.js:fetchProduct] Product: "${product.title}" (${handle})`);
+    console.log(`[shopify.js:fetchProduct] Total images: ${imageObjs.length}`);
+    imageObjs.forEach((img, idx) => {
+      console.log(`  - Image ${idx + 1}: src="${img.src}" | alt="${img.alt}"`);
+    });
+
     const colorOptionIdx = product.options
       ? product.options.findIndex(o => o.name.toLowerCase() === 'color')
       : -1;
@@ -97,16 +129,23 @@ export async function fetchProduct(handle) {
     const colorImageMap = {};
     if (colorOptionIdx >= 0) {
       const colorValues = product.options[colorOptionIdx].values;
+      console.log(`[shopify.js:fetchProduct] Color options found:`, colorValues);
 
       imageObjs.forEach(({ src, alt }) => {
-        // Normalise alt: lowercase, collapse spaces and hyphens to underscores
-        const altSlug = alt.toLowerCase().replace(/[\s\-]+/g, '_');
+        // Extract filename from URL to inspect as fallback
+        const urlPath = src.split('?')[0];
+        const filename = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+
+        // Normalise alt and filename: lowercase, collapse spaces, hyphens, and underscores
+        const altSlug = alt.toLowerCase().replace(/[\s\-\_]+/g, '_');
+        const filenameSlug = filename.toLowerCase().replace(/[\s\-\_]+/g, '_');
 
         colorValues.forEach(color => {
-          // "Navy Blue" → "navy_blue"
-          const colorSlug = color.toLowerCase().replace(/[\s\-]+/g, '_');
+          // Normalize color name to slug: "Navy Blue" -> "navy_blue"
+          const colorSlug = color.toLowerCase().replace(/[\s\-\_]+/g, '_');
 
-          if (altSlug.includes(colorSlug)) {
+          // Match if color slug is found in either alt text or the image filename
+          if (altSlug.includes(colorSlug) || filenameSlug.includes(colorSlug)) {
             if (!colorImageMap[color]) colorImageMap[color] = [];
             if (!colorImageMap[color].includes(src)) {
               colorImageMap[color].push(src);
@@ -114,6 +153,9 @@ export async function fetchProduct(handle) {
           }
         });
       });
+      console.log(`[shopify.js:fetchProduct] Resulting colorImageMap:`, colorImageMap);
+    } else {
+      console.log(`[shopify.js:fetchProduct] No Color option found for this product.`);
     }
 
     return {

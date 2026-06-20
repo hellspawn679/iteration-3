@@ -13,7 +13,7 @@ const ProductGrid = ({ products, onAddToCart }) => {
         <div className="product-grid">
           {products.map(product => (
             <div key={product.id} className="product-card">
-              <Link to={`/product/${product.handle}`} className="product-card__link">
+              <Link to={`/products/${product.handle}`} className="product-card__link">
                 <div className="product-card__image-wrapper">
                   <img 
                     src={product.image} 

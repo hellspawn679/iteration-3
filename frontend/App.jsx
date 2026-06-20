@@ -89,7 +89,7 @@ function App() {
           </main>
         } />
         
-        <Route path="/product/:handle" element={<ProductDetail onAddToCart={addToCart} />} />
+        <Route path="/products/:handle" element={<ProductDetail onAddToCart={addToCart} />} />
         <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/pages/terms-of-service" element={<TermsOfService />} />
       </Routes>

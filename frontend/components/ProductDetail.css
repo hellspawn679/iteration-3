@@ -302,6 +302,8 @@
 
 .pdp-description__content * {
   margin: 0 0 8px 0;
+  color: inherit !important;
+  background-color: transparent !important;
 }
 
 .pdp-description__content ul {
