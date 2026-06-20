@@ -1,0 +1,36 @@
+.collection-header {
+  padding-top: 30px;
+  padding-bottom: 10px;
+  background: var(--bg-color);
+}
+
+.collection-header__inner {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.collection-title {
+  font-size: 22px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.collection-count {
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 576px) {
+  .collection-header {
+    padding-top: 20px;
+    padding-bottom: 5px;
+  }
+
+  .collection-title {
+    font-size: 18px;
+  }
+}

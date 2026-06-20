@@ -1,0 +1,11 @@
+# Ignore Vite's build manifest and metadata directory (which Shopify doesn't support as assets subfolders)
+assets/.vite/*
+assets/.vite
+
+# Ignore raw development and source files
+frontend/*
+node_modules/*
+package.json
+package-lock.json
+vite.config.js
+README.md

@@ -1,0 +1,28 @@
+<!doctype html>
+<html class="js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="canonical" href="{{ canonical_url }}">
+    
+    <title>{{ page_title }} — DARTH</title>
+    
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {{ content_for_header }}
+
+    {% render 'vite-tag' with 'main.jsx' %}
+  </head>
+
+  <body style="margin: 0; padding: 0;">
+    <div id="root"></div>
+    <!-- We hide the default layout content since React is taking over the whole page -->
+    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1" style="display: none;">
+      {{ content_for_layout }}
+    </main>
+  </body>
+</html>
