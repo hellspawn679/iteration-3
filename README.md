@@ -54,13 +54,25 @@ http://127.0.0.1:9292
 
 Open this URL in your browser to see the theme live with hot-reloading.
 
-## Building for Production
+## Building for Production / Deploying via GitHub
 
+When running in development (`npm run dev`), the file `snippets/vite-tag.liquid` is set to load assets from your local server (`http://localhost:5173`). 
+
+If you are deploying your theme by pushing to **GitHub** and linking the repository to your Shopify store, you **must** build and commit the production assets. If you push the development version, your online theme preview will appear as a blank white screen because it will attempt to load files from `localhost`.
+
+### 1. Build the production assets
+Run the build script to compile React assets into the `assets/` directory and update the loader snippet:
 ```bash
 npm run build
 ```
 
-This compiles and minifies the React assets into the theme's `assets/` folder, ready for deployment.
+### 2. Commit and push the build files
+Commit the compiled assets and the updated `vite-tag` snippet to your repository:
+```bash
+git add snippets/vite-tag.liquid assets/
+git commit -m "build: compile assets for Shopify production"
+git push origin main
+```
 
 ## Deploying to Shopify
 
