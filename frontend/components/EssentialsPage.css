@@ -1,0 +1,201 @@
+.essentials-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+}
+
+/* Container Utility */
+.container-full {
+  width: 100%;
+  padding: 0 50px;
+}
+
+/* SECTION 1: Two-Image Grid Banner */
+.essentials-grid-banner {
+  padding: 30px 0;
+}
+
+.essentials-grid-row {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.essentials-grid-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.essentials-banner-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0px;
+  object-fit: cover;
+}
+
+/* SECTION 2: Slideshow Hero Banner (Square Aspect Ratio) */
+.essentials-hero {
+  padding: 10px 0;
+}
+
+.essentials-hero__link-wrapper {
+  display: block;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 50px;
+}
+
+.essentials-hero__image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--bg-medium-dim);
+}
+
+.essentials-hero__bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s ease;
+}
+
+.essentials-hero__image-container:hover .essentials-hero__bg-img {
+  transform: scale(1.03);
+}
+
+.essentials-hero__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.essentials-hero__cta-btn {
+  padding: 16px 40px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+  transition: all 0.3s ease;
+}
+
+.essentials-hero__cta-btn:hover {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+/* SECTION 3: Collection Product Grid */
+.essentials-collection-section {
+  padding: 60px 0;
+}
+
+.essentials-section-header {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.essentials-section-title {
+  font-size: 24px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.essentials-section-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* 5 Column Grid for Desktop */
+.essentials-product-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+/* Loading & Empty States */
+.essentials-loading {
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.essentials-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--text-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.essentials-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+/* RESPONSIVE STYLING */
+@media (max-width: 1200px) {
+  .essentials-product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .container-full,
+  .essentials-hero__link-wrapper {
+    padding: 0 25px;
+  }
+  
+  .essentials-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .essentials-grid-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .essentials-section-title {
+    font-size: 20px;
+  }
+  
+  .essentials-product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-full,
+  .essentials-hero__link-wrapper {
+    padding: 0 15px;
+  }
+  
+  .essentials-grid-banner {
+    padding: 15px 0;
+  }
+  
+  .essentials-hero__cta-btn {
+    padding: 12px 30px;
+    font-size: 11px;
+  }
+}

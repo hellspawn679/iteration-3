@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ShoppingBag, Search, User, Menu, X, Sun, Moon } from 'lucide-react';
 import './Navbar.css';
 
@@ -22,7 +23,8 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
 
           {/* Navigation Links - Left */}
           <div className={`nav-links nav-links-left ${mobileMenuOpen ? 'nav-links--open' : ''}`}>
-            <a href="/">HOME</a>
+            <Link to="/">HOME</Link>
+            <Link to="/pages/essentials">ESSENTIALS</Link>
             <a href="/#shop">SHOP ALL</a>
             <a href="/#collections">T-SHIRTS</a>
             <a href="/#hoodies">HOODIES</a>
@@ -30,9 +32,9 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
 
           {/* Brand Logo - Center */}
           <div className="nav-brand">
-            <a href="/" className="brand-link">
+            <Link to="/" className="brand-link">
               <span className="brand-title">DARTH</span>
-            </a>
+            </Link>
           </div>
 
           {/* Actions - Right */}

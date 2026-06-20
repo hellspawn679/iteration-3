@@ -8,6 +8,8 @@ import CartModal from './components/CartModal';
 import ProductDetail from './components/ProductDetail';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
+import EssentialsPage from './components/EssentialsPage';
+import CollectionDetail from './components/CollectionDetail';
 
 import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
 import './App.css';
@@ -89,9 +91,13 @@ function App() {
           </main>
         } />
         
-        <Route path="/products/:handle" element={<ProductDetail onAddToCart={addToCart} />} />
+        <Route path="/pages/essentials" element={<EssentialsPage />} />
         <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/pages/terms-of-service" element={<TermsOfService />} />
+        
+        {/* Dynamic collection and product routes matching Shopify's URL structures */}
+        <Route path="/:collection" element={<CollectionDetail />} />
+        <Route path="/:collection/:handle" element={<ProductDetail onAddToCart={addToCart} />} />
       </Routes>
 
       <Footer />

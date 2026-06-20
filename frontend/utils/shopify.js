@@ -218,3 +218,48 @@ export async function addToCart(variantId, quantity = 1) {
     throw error;
   }
 }
+
+export async function fetchCollectionProducts(collectionHandle) {
+  try {
+    const res = await fetch(`/collections/${collectionHandle}/products.json`);
+    if (!res.ok) throw new Error(`Failed to fetch Shopify collection products for: ${collectionHandle}`);
+    const data = await res.json();
+    
+    return data.products.map(product => {
+      const colorOption = product.options ? product.options.find(opt => opt.name.toLowerCase() === 'color') : null;
+      const colorCount = colorOption ? colorOption.values.length : 0;
+      const colorValues = colorOption ? colorOption.values : [];
+      
+      const primaryImage = product.images && product.images.length > 0 ? product.images[0].src : '';
+      const secondaryImage = product.images && product.images.length > 1 ? product.images[1].src : '';
+      const allImages = product.images ? product.images.map(img => img.src) : [];
+      
+      const price = parseFloat(product.variants[0].price);
+      let compareAtPrice = product.variants[0].compare_at_price
+        ? parseFloat(product.variants[0].compare_at_price)
+        : price + 300;
+
+      let discountPercent = Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
+      
+      return {
+        id: product.variants[0].id.toString(),
+        handle: product.handle,
+        name: product.title,
+        price: price,
+        compareAtPrice: compareAtPrice,
+        discountPercent: discountPercent,
+        image: primaryImage,
+        secondaryImage: secondaryImage,
+        images: allImages,
+        status: product.variants[0].available ? 'IN_STOCK' : 'SOLD_OUT',
+        type: product.product_type || 'APPAREL',
+        hasVariants: product.variants.length > 1,
+        colorCount: colorCount,
+        colorValues: colorValues
+      };
+    });
+  } catch (error) {
+    console.error(`Shopify fetch collection products error (${collectionHandle}):`, error);
+    return [];
+  }
+}
