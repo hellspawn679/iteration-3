@@ -1,0 +1,112 @@
+/* === POLICY PAGE WRAPPER === */
+.policy-page {
+  min-height: 100vh;
+  background: var(--bg-color);
+  padding: 30px 0 80px;
+}
+
+/* === BACK BUTTON === */
+.policy-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.policy-page__back:hover {
+  color: var(--text-primary);
+}
+
+/* === POLICY CONTENT === */
+.policy-content {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.policy-content__title {
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.policy-content__updated {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+/* === PROSE TYPOGRAPHY === */
+.policy-content h2 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-top: 40px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.policy-content p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.policy-content ul {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.policy-content ul li {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.policy-content ul ul {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.policy-content a {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.policy-content a:hover {
+  color: var(--text-secondary);
+}
+
+.policy-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .policy-content__title {
+    font-size: 22px;
+  }
+
+  .policy-content h2 {
+    font-size: 13px;
+  }
+}

@@ -6,6 +6,8 @@ import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import CartModal from './components/CartModal';
 import ProductDetail from './components/ProductDetail';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 
 import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
 import './App.css';
@@ -15,6 +17,21 @@ function App() {
   const [cartItems, setCartItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // Dark mode is default — read from localStorage, fallback to 'dark'
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('darth-theme') || 'dark';
+  });
+
+  // Apply theme attribute to <html> whenever theme changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('darth-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   useEffect(() => {
     fetchProducts().then(data => {
@@ -51,7 +68,12 @@ function App() {
 
   return (
     <div className="app-container">
-      <Navbar cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} onOpenCart={() => setIsCartOpen(true)} />
+      <Navbar
+        cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+        onOpenCart={() => setIsCartOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
       
       <Routes>
         <Route path="/" element={
@@ -68,6 +90,8 @@ function App() {
         } />
         
         <Route path="/product/:handle" element={<ProductDetail onAddToCart={addToCart} />} />
+        <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/pages/terms-of-service" element={<TermsOfService />} />
       </Routes>
 
       <Footer />

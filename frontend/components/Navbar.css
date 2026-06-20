@@ -123,6 +123,27 @@
   padding: 4px;
 }
 
+/* === THEME TOGGLE === */
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--toggle-bg);
+  color: var(--toggle-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.theme-toggle:hover {
+  opacity: 1;
+  background: var(--bg-dim);
+  color: var(--text-primary);
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .nav-links {
@@ -164,3 +185,4 @@
     font-size: 20px;
   }
 }
+

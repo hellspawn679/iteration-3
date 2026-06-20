@@ -17,15 +17,14 @@ export async function fetchProducts() {
       
       // Get pricing info
       const price = parseFloat(product.variants[0].price);
-      const compareAtPrice = product.variants[0].compare_at_price 
-        ? parseFloat(product.variants[0].compare_at_price) 
-        : null;
-      
-      // Calculate discount percentage
-      let discountPercent = null;
-      if (compareAtPrice && compareAtPrice > price) {
-        discountPercent = Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
-      }
+      // If Shopify has no compare_at_price set, fabricate MRP = price + ₹300
+      // so all products show a crossed-out original price and discount %
+      let compareAtPrice = product.variants[0].compare_at_price
+        ? parseFloat(product.variants[0].compare_at_price)
+        : price + 300;
+
+      // Calculate discount percentage (integer)
+      let discountPercent = Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
       
       return {
         id: product.variants[0].id.toString(),
@@ -52,41 +51,94 @@ export async function fetchProducts() {
 
 export async function fetchProduct(handle) {
   try {
-    const res = await fetch(`/products/${handle}.js`);
+    // Use /products.json?handle= so we get full image objects with alt text.
+    // The /products/{handle}.js endpoint only returns image URLs as plain strings —
+    // no alt text available there, which we need for the color gallery feature.
+    const res = await fetch(`/products/${handle}.json`);
     if (!res.ok) throw new Error('Failed to fetch Shopify product');
-    const product = await res.json();
+    const data = await res.json();
+    const product = data.product;
+    if (!product) return null;
 
-    // Get pricing info
-    const price = parseFloat(product.variants[0].price) / 100;
-    const compareAtPrice = product.variants[0].compare_at_price 
-      ? parseFloat(product.variants[0].compare_at_price) / 100
-      : null;
-    
-    let discountPercent = null;
-    if (compareAtPrice && compareAtPrice > price) {
-      discountPercent = Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
+    // /products.json returns prices as INR decimal strings ("1400.00") — no /100 needed.
+    const price = parseFloat(product.variants[0].price);
+    let compareAtPrice = product.variants[0].compare_at_price
+      ? parseFloat(product.variants[0].compare_at_price)
+      : price + 300;
+    let discountPercent = Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
+
+    // Normalise any image src to a full https:// URL
+    const toHttps = src => (src && !src.startsWith('http')) ? 'https:' + src : src;
+
+    // Keep both src and alt for the color-map builder step below
+    const imageObjs = product.images
+      ? product.images.map(img => ({ src: toHttps(img.src), alt: img.alt || '' }))
+      : [];
+
+    // ── Color → Images map (alt-text based) ───────────────────────────────────
+    //
+    // Convention agreed with the store owner:
+    //   Shopify image alt text follows the pattern:  productname_colorslug_view
+    //   e.g.  "face_black_front"         → color "Black"
+    //         "face_navy_blue_front"     → color "Navy Blue"
+    //         "hoodie_acid_grey_back"    → color "Acid Grey"
+    //
+    // Algorithm:
+    //   1. For every Color option value, compute its slug:
+    //        "Navy Blue" → "navy_blue"  (lowercase, spaces/hyphens → underscore)
+    //   2. For every image, compute the alt slug the same way.
+    //   3. If the alt slug CONTAINS the color slug → add to that color's list.
+    //   4. Fallback in UI: if a color has zero matched images, show all images.
+    // ─────────────────────────────────────────────────────────────────────────
+    const colorOptionIdx = product.options
+      ? product.options.findIndex(o => o.name.toLowerCase() === 'color')
+      : -1;
+
+    const colorImageMap = {};
+    if (colorOptionIdx >= 0) {
+      const colorValues = product.options[colorOptionIdx].values;
+
+      imageObjs.forEach(({ src, alt }) => {
+        // Normalise alt: lowercase, collapse spaces and hyphens to underscores
+        const altSlug = alt.toLowerCase().replace(/[\s\-]+/g, '_');
+
+        colorValues.forEach(color => {
+          // "Navy Blue" → "navy_blue"
+          const colorSlug = color.toLowerCase().replace(/[\s\-]+/g, '_');
+
+          if (altSlug.includes(colorSlug)) {
+            if (!colorImageMap[color]) colorImageMap[color] = [];
+            if (!colorImageMap[color].includes(src)) {
+              colorImageMap[color].push(src);
+            }
+          }
+        });
+      });
     }
-    
+
     return {
       id: product.variants[0].id.toString(),
       handle: product.handle,
       name: product.title,
-      price: price,
-      compareAtPrice: compareAtPrice,
-      discountPercent: discountPercent,
-      images: product.images ? product.images.map(img => 'https:' + img) : [],
-      description: product.description,
-      status: product.available ? 'IN_STOCK' : 'SOLD_OUT',
-      type: product.type || 'APPAREL',
+      price,
+      compareAtPrice,
+      discountPercent,
+      // Flat list of all image URLs — used as fallback when no color images match
+      images: imageObjs.map(i => i.src),
+      description: product.body_html || '',
+      status: product.variants[0].available ? 'IN_STOCK' : 'SOLD_OUT',
+      type: product.product_type || 'APPAREL',
       options: product.options || [],
+      // color name → [image URLs], built from alt text.  Empty {} if no Color option.
+      colorImageMap,
+      // 1-based index of the Color option (-1 if product has no Color option)
+      colorOptionIdx: colorOptionIdx >= 0 ? colorOptionIdx + 1 : -1,
       variants: product.variants.map(v => {
-        const vPrice = parseFloat(v.price) / 100;
-        const vCompareAt = v.compare_at_price ? parseFloat(v.compare_at_price) / 100 : null;
-        let vDiscount = null;
-        if (vCompareAt && vCompareAt > vPrice) {
-          vDiscount = Math.round(((vCompareAt - vPrice) / vCompareAt) * 100);
-        }
-        
+        const vPrice = parseFloat(v.price);
+        let vCompareAt = v.compare_at_price
+          ? parseFloat(v.compare_at_price)
+          : vPrice + 300;
+        let vDiscount = Math.round(((vCompareAt - vPrice) / vCompareAt) * 100);
         return {
           id: v.id.toString(),
           title: v.title,
@@ -95,7 +147,7 @@ export async function fetchProduct(handle) {
           discountPercent: vDiscount,
           available: v.available,
           options: product.options.map((opt, index) => v[`option${index + 1}`]),
-          featured_image: v.featured_image ? 'https:' + v.featured_image.src : null
+          featured_image: v.featured_image ? toHttps(v.featured_image.src) : null
         };
       })
     };

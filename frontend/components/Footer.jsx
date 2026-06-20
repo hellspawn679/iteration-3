@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AtSign, Globe, Mail } from 'lucide-react';
 import './Footer.css';
 
@@ -43,8 +44,8 @@ const Footer = () => {
             <ul className="footer-col__list">
               <li><a href="#">Shipping Policy</a></li>
               <li><a href="#">Return & Exchange</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
+              <li><Link to="/pages/privacy-policy">Privacy Policy</Link></li>
+              <li><Link to="/pages/terms-of-service">Terms of Service</Link></li>
             </ul>
           </div>
 

@@ -46,14 +46,23 @@ const ProductDetail = ({ onAddToCart }) => {
   const handleOptionChange = (optionIndex, value) => {
     const newOptions = { ...selectedOptions, [`option${optionIndex}`]: value };
     setSelectedOptions(newOptions);
-    
+
     if (product && product.variants) {
-      const variant = product.variants.find(v => 
+      // If the changed option is the Color option, switch gallery to that colour's images
+      if (product.colorOptionIdx > 0 && optionIndex === product.colorOptionIdx) {
+        const colorImgs = product.colorImageMap?.[value];
+        if (colorImgs && colorImgs.length > 0) {
+          setActiveImage(colorImgs[0]);
+        }
+      }
+
+      const variant = product.variants.find(v =>
         product.options.every((opt, idx) => v.options[idx] === newOptions[`option${idx + 1}`])
       );
       if (variant) {
         setCurrentVariant(variant);
-        if (variant.featured_image) {
+        // Only override activeImage from featured_image if no color-map image was set above
+        if (variant.featured_image && !(product.colorOptionIdx > 0 && optionIndex === product.colorOptionIdx)) {
           setActiveImage(variant.featured_image);
         }
       } else {
@@ -99,6 +108,17 @@ const ProductDetail = ({ onAddToCart }) => {
   const currentCompareAt = currentVariant ? currentVariant.compareAtPrice : product.compareAtPrice;
   const currentDiscount = currentVariant ? currentVariant.discountPercent : product.discountPercent;
 
+  // Determine which images to show in the gallery.
+  // If the product has a Color option and the selected color has mapped images,
+  // show only that colour's mockups; otherwise show all product images.
+  const selectedColor = product.colorOptionIdx > 0
+    ? selectedOptions[`option${product.colorOptionIdx}`]
+    : null;
+  const colorSpecificImages = selectedColor && product.colorImageMap?.[selectedColor];
+  const displayImages = (colorSpecificImages && colorSpecificImages.length > 0)
+    ? colorSpecificImages
+    : product.images;
+
   return (
     <section className="pdp animate-fade-in">
       <div className="container">
@@ -114,12 +134,12 @@ const ProductDetail = ({ onAddToCart }) => {
         <div className="pdp-layout">
           {/* Gallery */}
           <div className="pdp-gallery">
-            {/* Thumbnails on left */}
-            {product.images && product.images.length > 1 && (
+                      {/* Thumbnails on left */}
+            {displayImages && displayImages.length > 1 && (
               <div className="pdp-gallery__thumbs">
-                {product.images.map((img, idx) => (
-                  <button 
-                    key={idx} 
+                {displayImages.map((img, idx) => (
+                  <button
+                    key={idx}
                     className={`pdp-gallery__thumb ${activeImage === img ? 'pdp-gallery__thumb--active' : ''}`}
                     onClick={() => setActiveImage(img)}
                   >
@@ -129,9 +149,9 @@ const ProductDetail = ({ onAddToCart }) => {
               </div>
             )}
             
-            {/* Main image */}
+                        {/* Main image */}
             <div className="pdp-gallery__main">
-              <img src={activeImage || product.images[0]} alt={product.name} className="pdp-gallery__main-img" />
+              <img src={activeImage || displayImages[0]} alt={product.name} className="pdp-gallery__main-img" />
               
               {currentDiscount && (
                 <div className="pdp-gallery__badge">Sale</div>

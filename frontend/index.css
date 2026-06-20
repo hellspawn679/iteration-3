@@ -1,6 +1,79 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-:root {
+/* =============================================
+   DARK MODE (DEFAULT)
+   ============================================= */
+:root,
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-color: #0d0d0d;
+  --bg-dim: #141414;
+  --bg-light-dim: #1a1a1a;
+  --bg-medium-dim: #111111;
+
+  /* Text */
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+
+  /* Borders */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.05);
+
+  /* Accent / Buttons */
+  --accent: #f0f0f0;
+  --accent-light: #ffffff;
+  --accent-dim: #d4d4d4;
+  --accent-text: #0d0d0d;
+
+  /* Sale / Pricing */
+  --price-color: #f0f0f0;
+  --price-sale: #ff5c5c;
+  --price-compare: #666666;
+
+  /* Cart dot */
+  --cart-dot: #ff4f33;
+
+  /* Announcement bar */
+  --announcement-bg: #111111;
+  --announcement-text: #a0a0a0;
+
+  /* Nav */
+  --nav-bg: #0d0d0d;
+  --nav-text: #f0f0f0;
+
+  /* Footer */
+  --footer-bg: #080808;
+  --footer-text: #a0a0a0;
+
+  /* Drawer */
+  --drawer-bg: #141414;
+  --drawer-border: rgba(255, 255, 255, 0.08);
+  --drawer-text: #f0f0f0;
+
+  /* Card hover */
+  --card-hover-bg: #1a1a1a;
+
+  /* Button radius */
+  --btn-radius: 3px;
+
+  /* Grid gutter */
+  --grid-gutter: 17px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.6);
+
+  /* Theme toggle */
+  --toggle-bg: #1a1a1a;
+  --toggle-icon: #a0a0a0;
+}
+
+/* =============================================
+   LIGHT MODE (override)
+   ============================================= */
+[data-theme="light"] {
   /* Backgrounds */
   --bg-color: #ffffff;
   --bg-dim: #f2f2f2;
@@ -47,6 +120,9 @@
   --drawer-border: #e8e8e1;
   --drawer-text: #000000;
 
+  /* Card hover */
+  --card-hover-bg: #fafafa;
+
   /* Button radius */
   --btn-radius: 3px;
 
@@ -57,8 +133,15 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+  /* Theme toggle */
+  --toggle-bg: #f0f0f0;
+  --toggle-icon: #666666;
 }
 
+/* =============================================
+   GLOBAL RESET & BASE STYLES
+   ============================================= */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -67,6 +150,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Smooth theme transitions */
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body {
@@ -79,6 +164,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -105,7 +191,9 @@ img {
   display: block;
 }
 
-/* === BUTTONS === */
+/* =============================================
+   BUTTONS
+   ============================================= */
 .btn-primary {
   background: var(--accent);
   color: var(--accent-text);
@@ -156,7 +244,9 @@ img {
   border-color: var(--text-primary);
 }
 
-/* === CONTAINER === */
+/* =============================================
+   LAYOUT
+   ============================================= */
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -167,7 +257,9 @@ img {
   padding: 40px 0;
 }
 
-/* === ANIMATIONS === */
+/* =============================================
+   ANIMATIONS
+   ============================================= */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -196,31 +288,37 @@ img {
   animation: fadeInUp 0.5s ease forwards;
 }
 
-/* === SCROLLBAR === */
+/* =============================================
+   SCROLLBAR
+   ============================================= */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f5f5f5;
+  background: var(--bg-dim);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: var(--text-muted);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+  background: var(--text-secondary);
 }
 
-/* === SELECTION === */
+/* =============================================
+   SELECTION
+   ============================================= */
 ::selection {
-  background: rgba(0, 0, 0, 0.1);
-  color: #000;
+  background: rgba(240, 240, 240, 0.15);
+  color: var(--text-primary);
 }
 
-/* === RESPONSIVE === */
+/* =============================================
+   RESPONSIVE
+   ============================================= */
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;
