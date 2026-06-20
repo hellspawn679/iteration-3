@@ -1,0 +1,106 @@
+.collection-bubbles-section {
+  width: 100%;
+  padding: 24px 0 16px 0;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+.collection-bubbles-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 0 16px;
+  margin: 0 auto;
+  max-width: 1200px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.collection-bubbles-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.collection-bubble-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  width: 110px;
+  transition: opacity 0.2s ease;
+}
+
+.collection-bubble-img-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 3px;
+  transition: border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: var(--bg-dim);
+}
+
+.collection-bubble-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.collection-bubble-title {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+/* Hover & Active States */
+.collection-bubble-item:hover .collection-bubble-img-wrapper {
+  transform: scale(1.06);
+  border-color: var(--text-secondary);
+}
+
+.collection-bubble-item.is-active .collection-bubble-img-wrapper {
+  border-color: var(--accent);
+  transform: scale(1.04);
+}
+
+.collection-bubble-item.is-active .collection-bubble-title {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Responsiveness */
+@media (min-width: 768px) {
+  .collection-bubbles-container {
+    justify-content: center;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 767px) {
+  .collection-bubbles-section {
+    padding: 16px 0 12px 0;
+  }
+  
+  .collection-bubble-item {
+    width: 95px;
+  }
+  
+  .collection-bubble-img-wrapper {
+    width: 86px;
+    height: 86px;
+  }
+  
+  .collection-bubble-title {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+}

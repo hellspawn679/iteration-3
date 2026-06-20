@@ -263,3 +263,62 @@ export async function fetchCollectionProducts(collectionHandle) {
     return [];
   }
 }
+
+export async function fetchCollections() {
+  try {
+    const res = await fetch('/collections.json');
+    if (!res.ok) throw new Error('Failed to fetch Shopify collections');
+    const data = await res.json();
+    
+    // Filter out collections with 0 products or template collections
+    const filteredCollections = data.collections.filter(col => {
+      if (col.products_count === 0) return false;
+      const handle = col.handle.toLowerCase();
+      if (handle === 'frontpage' || handle === 'all' || handle.includes('asset-pack') || handle.includes('example')) {
+        return false;
+      }
+      return true;
+    });
+
+    // Resolve cover image and fallback for each collection
+    const collectionPromises = filteredCollections.map(async (col) => {
+      let imageSrc = col.image ? col.image.src : null;
+      
+      if (!imageSrc) {
+        try {
+          const prodRes = await fetch(`/collections/${col.handle}/products.json`);
+          if (prodRes.ok) {
+            const prodData = await prodRes.json();
+            if (prodData.products && prodData.products.length > 0) {
+              const firstProduct = prodData.products[0];
+              if (firstProduct.images && firstProduct.images.length > 0) {
+                imageSrc = firstProduct.images[0].src;
+              }
+            }
+          }
+        } catch (err) {
+          console.error(`Error fetching fallback image for collection ${col.handle}:`, err);
+        }
+      }
+
+      // Ensure full HTTPS url
+      if (imageSrc && !imageSrc.startsWith('http')) {
+        imageSrc = 'https:' + imageSrc;
+      }
+
+      return {
+        id: col.id.toString(),
+        title: col.title,
+        handle: col.handle,
+        image: imageSrc || '',
+        productsCount: col.products_count
+      };
+    });
+
+    return await Promise.all(collectionPromises);
+  } catch (error) {
+    console.error('Shopify fetch collections error:', error);
+    return [];
+  }
+}
+

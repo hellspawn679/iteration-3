@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchCollectionProducts } from '../utils/shopify';
 import ProductCard from './ProductCard';
+import CollectionBubbles from './CollectionBubbles';
 import './EssentialsPage.css';
 
 const EssentialsPage = () => {
@@ -21,6 +22,9 @@ const EssentialsPage = () => {
 
   return (
     <div className="essentials-page animate-fade-in">
+      {/* Category Bubbles Navigation */}
+      <CollectionBubbles activeHandle={collectionHandle} />
+
       {/* SECTION 1: Two-Image Grid Block */}
       <section className="essentials-grid-banner">
         <div className="container-full">

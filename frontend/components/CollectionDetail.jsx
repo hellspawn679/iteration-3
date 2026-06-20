@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchCollectionProducts } from '../utils/shopify';
 import ProductGrid from './ProductGrid';
 import { ChevronLeft } from 'lucide-react';
+import CollectionBubbles from './CollectionBubbles';
 import './CollectionDetail.css';
 
 const formatTitle = (handle) => {
@@ -45,6 +46,9 @@ const CollectionDetail = () => {
             <span>Back to Shop</span>
           </button>
         </nav>
+
+        {/* Collection Category Bubbles Header */}
+        <CollectionBubbles activeHandle={collection} />
 
         {/* Collection Header */}
         <header className="collection-header-section">

@@ -10,6 +10,8 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import EssentialsPage from './components/EssentialsPage';
 import CollectionDetail from './components/CollectionDetail';
+import CollectionBubbles from './components/CollectionBubbles';
+import GothPage from './components/GothPage';
 
 import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
 import './App.css';
@@ -81,6 +83,7 @@ function App() {
         <Route path="/" element={
           <main>
             <Hero />
+            <CollectionBubbles />
             {loadingProducts ? (
               <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
                 Loading products...
@@ -92,6 +95,7 @@ function App() {
         } />
         
         <Route path="/pages/essentials" element={<EssentialsPage />} />
+        <Route path="/pages/goth" element={<GothPage />} />
         <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/pages/terms-of-service" element={<TermsOfService />} />
         
