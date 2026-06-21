@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
 import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import CartModal from './components/CartModal';
@@ -82,7 +81,6 @@ function App() {
       <Routes>
         <Route path="/" element={
           <main>
-            <Hero />
             <CollectionBubbles />
             {loadingProducts ? (
               <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
