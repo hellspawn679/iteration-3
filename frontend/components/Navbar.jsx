@@ -6,11 +6,6 @@ import './Navbar.css';
 const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
   return (
     <header className="site-header">
-      {/* Announcement Bar */}
-      <div className="announcement-bar">
-        <p>Get Flat 10% Off on PREPAID ORDERS | Free Shipping on Orders Above ₹999</p>
-      </div>
-
       {/* Main Navbar */}
       <nav className="navbar">
         <div className="container nav-container">
