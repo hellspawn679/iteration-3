@@ -18,38 +18,60 @@ const ProductDetail = ({ onAddToCart }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [currentVariant, setCurrentVariant] = useState(null);
   const [cartState, setCartState] = useState('idle'); // 'idle' | 'animating'
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
 
-  const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+  // Derive displayImages at the top so hooks can safely access it
+  const selectedColor = (product && product.colorOptionIdx > 0)
+    ? selectedOptions[`option${product.colorOptionIdx}`]
+    : null;
+  const colorSpecificImages = selectedColor && product?.colorImageMap?.[selectedColor];
+  const displayImages = product
+    ? ((colorSpecificImages && colorSpecificImages.length > 0) ? colorSpecificImages : product.images)
+    : [];
 
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+  const [activeIndex, setActiveIndex] = useState(0);
+  const galleryRef = React.useRef(null);
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const minSwipeDistance = 50;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if ((isLeftSwipe || isRightSwipe) && displayImages && displayImages.length > 1) {
-      const currentIdx = displayImages.indexOf(activeImage || displayImages[0]);
-      if (currentIdx !== -1) {
-        if (isLeftSwipe) {
-          const nextIdx = (currentIdx + 1) % displayImages.length;
-          setActiveImage(displayImages[nextIdx]);
-        } else if (isRightSwipe) {
-          const prevIdx = (currentIdx - 1 + displayImages.length) % displayImages.length;
-          setActiveImage(displayImages[prevIdx]);
+  // Sync scrolling position with external state changes (like variant color changes)
+  useEffect(() => {
+    if (displayImages.length > 0 && activeImage) {
+      const idx = displayImages.indexOf(activeImage);
+      if (idx !== -1 && idx !== activeIndex) {
+        setActiveIndex(idx);
+        if (galleryRef.current) {
+          const currentScrollIndex = Math.round(galleryRef.current.scrollLeft / galleryRef.current.clientWidth);
+          if (currentScrollIndex !== idx) {
+            galleryRef.current.scrollTo({
+              left: idx * galleryRef.current.clientWidth,
+              behavior: 'auto'
+            });
+          }
         }
       }
     }
-    setTouchStart(0);
-    setTouchEnd(0);
+  }, [activeImage, displayImages, activeIndex]);
+
+  const handleScroll = () => {
+    if (galleryRef.current) {
+      const { scrollLeft, clientWidth } = galleryRef.current;
+      if (clientWidth > 0) {
+        const index = Math.round(scrollLeft / clientWidth);
+        if (index !== activeIndex && index >= 0 && index < displayImages.length) {
+          setActiveIndex(index);
+          setActiveImage(displayImages[index]);
+        }
+      }
+    }
+  };
+
+  const handleDotClick = (idx) => {
+    setActiveImage(displayImages[idx]);
+    setActiveIndex(idx);
+    if (galleryRef.current) {
+      galleryRef.current.scrollTo({
+        left: idx * galleryRef.current.clientWidth,
+        behavior: 'smooth'
+      });
+    }
   };
 
   useEffect(() => {
@@ -154,16 +176,7 @@ const ProductDetail = ({ onAddToCart }) => {
   const currentCompareAt = currentVariant ? currentVariant.compareAtPrice : product.compareAtPrice;
   const currentDiscount = currentVariant ? currentVariant.discountPercent : product.discountPercent;
 
-  // Determine which images to show in the gallery.
-  // If the product has a Color option and the selected color has mapped images,
-  // show only that colour's mockups; otherwise show all product images.
-  const selectedColor = product.colorOptionIdx > 0
-    ? selectedOptions[`option${product.colorOptionIdx}`]
-    : null;
-  const colorSpecificImages = selectedColor && product.colorImageMap?.[selectedColor];
-  const displayImages = (colorSpecificImages && colorSpecificImages.length > 0)
-    ? colorSpecificImages
-    : product.images;
+  // displayImages is derived at the top of the component
 
   return (
     <section className="pdp animate-fade-in">
@@ -186,8 +199,8 @@ const ProductDetail = ({ onAddToCart }) => {
                 {displayImages.map((img, idx) => (
                   <button
                     key={idx}
-                    className={`pdp-gallery__thumb ${activeImage === img ? 'pdp-gallery__thumb--active' : ''}`}
-                    onClick={() => setActiveImage(img)}
+                    className={`pdp-gallery__thumb ${activeIndex === idx ? 'pdp-gallery__thumb--active' : ''}`}
+                    onClick={() => handleDotClick(idx)}
                   >
                     <img src={img} alt={`${product.name} ${idx + 1}`} />
                   </button>
@@ -195,19 +208,23 @@ const ProductDetail = ({ onAddToCart }) => {
               </div>
             )}
             
-                        {/* Main image */}
-            <div 
-              className="pdp-gallery__main"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <img 
-                key={activeImage || displayImages[0]}
-                src={activeImage || displayImages[0]} 
-                alt={product.name} 
-                className="pdp-gallery__main-img" 
-              />
+            {/* Main image carousel wrapper */}
+            <div className="pdp-gallery__main">
+              <div 
+                className="pdp-gallery__slides"
+                ref={galleryRef}
+                onScroll={handleScroll}
+              >
+                {displayImages.map((img, idx) => (
+                  <div className="pdp-gallery__slide" key={idx}>
+                    <img 
+                      src={img} 
+                      alt={`${product.name} ${idx + 1}`} 
+                      className="pdp-gallery__main-img" 
+                    />
+                  </div>
+                ))}
+              </div>
               
               {currentDiscount && (
                 <div className="pdp-gallery__badge">Sale</div>
@@ -219,8 +236,8 @@ const ProductDetail = ({ onAddToCart }) => {
                   {displayImages.map((img, idx) => (
                     <span
                       key={idx}
-                      className={`pdp-gallery__dot ${(activeImage || displayImages[0]) === img ? 'pdp-gallery__dot--active' : ''}`}
-                      onClick={() => setActiveImage(img)}
+                      className={`pdp-gallery__dot ${activeIndex === idx ? 'pdp-gallery__dot--active' : ''}`}
+                      onClick={() => handleDotClick(idx)}
                     />
                   ))}
                 </div>
