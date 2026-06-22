@@ -3,3 +3,122 @@
   min-height: 100vh;
   background-color: var(--bg-color);
 }
+
+/* === FLY-TO-CART ANIMATION === */
+.flying-cart-item {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  z-index: 99999;
+  pointer-events: none;
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-lg);
+  animation: flyX 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards, flyY 0.8s cubic-bezier(0.06, 0.9, 0.28, 1) forwards;
+}
+
+@keyframes flyX {
+  0% {
+    left: var(--start-x);
+    transform: scale(1.2);
+  }
+  100% {
+    left: var(--target-x);
+    transform: scale(0.15);
+  }
+}
+
+@keyframes flyY {
+  0% {
+    top: var(--start-y);
+    opacity: 0.3;
+  }
+  15% {
+    opacity: 1;
+  }
+  40% {
+    /* Peak of the parabolic arc */
+    top: calc(var(--start-y) - 120px);
+  }
+  100% {
+    top: var(--target-y);
+    opacity: 0;
+  }
+}
+
+.bubble-transition-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none;
+  background-color: #000000; /* Pure black background by default */
+  clip-path: circle(50px at var(--spawn-x) var(--spawn-y));
+  animation: expandBubble 0.7s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+[data-theme="light"] .bubble-transition-overlay {
+  background-color: #ffffff; /* Pure white background in light mode */
+}
+
+.transition-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  max-width: 500px;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: logoEntrance 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.15s forwards;
+}
+
+.transition-logo {
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+  transition: filter 0.3s ease;
+}
+
+[data-theme="light"] .transition-logo {
+  filter: invert(1); /* Inverts the black glitch logo to a white glitch style in light mode */
+}
+
+@keyframes logoEntrance {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bubble-transition-overlay.fade-out {
+  animation: fadeOutOverlay 0.5s ease forwards;
+}
+
+@keyframes expandBubble {
+  0% {
+    clip-path: circle(50px at var(--spawn-x) var(--spawn-y));
+  }
+  100% {
+    clip-path: circle(150vmax at var(--spawn-x) var(--spawn-y));
+  }
+}
+
+@keyframes fadeOutOverlay {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

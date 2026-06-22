@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const formatPrice = (price) => {
@@ -7,9 +7,34 @@ const formatPrice = (price) => {
 
 const ProductCard = ({ product, collectionHandle = 'products' }) => {
   const productLink = `/${collectionHandle}/${product.handle}`;
+  const cardRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.unobserve(entry.target);
+      }
+    }, {
+      threshold: 0.05,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
-    <div className="product-card">
+    <div 
+      ref={cardRef} 
+      className={`product-card ${isVisible ? 'is-visible' : 'is-hidden'}`}
+    >
       <Link to={productLink} className="product-card__link">
         <div className="product-card__image-wrapper">
           <img 

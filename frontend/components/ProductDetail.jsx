@@ -17,6 +17,50 @@ const ProductDetail = ({ onAddToCart }) => {
   const [activeImage, setActiveImage] = useState('');
   const [selectedOptions, setSelectedOptions] = useState({});
   const [currentVariant, setCurrentVariant] = useState(null);
+  const [cartState, setCartState] = useState('idle'); // 'idle' | 'animating'
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if ((isLeftSwipe || isRightSwipe) && displayImages && displayImages.length > 1) {
+      const currentIdx = displayImages.indexOf(activeImage || displayImages[0]);
+      if (currentIdx !== -1) {
+        if (isLeftSwipe) {
+          const nextIdx = (currentIdx + 1) % displayImages.length;
+          setActiveImage(displayImages[nextIdx]);
+        } else if (isRightSwipe) {
+          const prevIdx = (currentIdx - 1 + displayImages.length) % displayImages.length;
+          setActiveImage(displayImages[prevIdx]);
+        }
+      }
+    }
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
+  useEffect(() => {
+    let timer;
+    if (cartState === 'animating') {
+      timer = setTimeout(() => {
+        setCartState('idle');
+      }, 1800);
+    }
+    return () => clearTimeout(timer);
+  }, [cartState]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -71,15 +115,17 @@ const ProductDetail = ({ onAddToCart }) => {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    if (cartState !== 'idle') return;
     if (currentVariant && currentVariant.available) {
+      setCartState('animating');
       onAddToCart({
         id: currentVariant.id,
         name: `${product.name} - ${currentVariant.title}`,
         price: currentVariant.price,
         image: currentVariant.featured_image || activeImage,
         handle: product.handle
-      });
+      }, e);
     }
   };
 
@@ -150,11 +196,34 @@ const ProductDetail = ({ onAddToCart }) => {
             )}
             
                         {/* Main image */}
-            <div className="pdp-gallery__main">
-              <img src={activeImage || displayImages[0]} alt={product.name} className="pdp-gallery__main-img" />
+            <div 
+              className="pdp-gallery__main"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <img 
+                key={activeImage || displayImages[0]}
+                src={activeImage || displayImages[0]} 
+                alt={product.name} 
+                className="pdp-gallery__main-img" 
+              />
               
               {currentDiscount && (
                 <div className="pdp-gallery__badge">Sale</div>
+              )}
+
+              {/* Mobile Swipe Pagination Dots */}
+              {displayImages && displayImages.length > 1 && (
+                <div className="pdp-gallery__dots">
+                  {displayImages.map((img, idx) => (
+                    <span
+                      key={idx}
+                      className={`pdp-gallery__dot ${(activeImage || displayImages[0]) === img ? 'pdp-gallery__dot--active' : ''}`}
+                      onClick={() => setActiveImage(img)}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -201,12 +270,21 @@ const ProductDetail = ({ onAddToCart }) => {
             {/* Add to Cart */}
             <div className="pdp-actions">
               <button 
-                className="pdp-actions__atc"
+                className={`pdp-actions__atc ${cartState === 'animating' ? 'animate' : ''}`}
                 onClick={handleAddToCart}
-                disabled={!isAvailable}
+                disabled={!isAvailable || cartState === 'animating'}
               >
-                <ShoppingBag size={18} />
-                {!isAvailable ? 'Sold Out' : 'Add to Cart'}
+                <div className="particle p1"></div>
+                <div className="particle p2"></div>
+                <div className="particle p3"></div>
+
+                <span className="cart-icon">
+                  <ShoppingBag size={18} />
+                </span>
+
+                <span className="btn-text">
+                  {!isAvailable ? 'Sold Out' : 'Add to Cart'}
+                </span>
               </button>
             </div>
 

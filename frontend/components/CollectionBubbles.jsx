@@ -18,10 +18,24 @@ const CollectionBubbles = ({ activeHandle }) => {
     return null;
   }
 
+  const handleBubbleClick = (e, linkTo, colImage) => {
+    e.preventDefault();
+    const wrapper = e.currentTarget.querySelector('.collection-bubble-img-wrapper');
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    const event = new CustomEvent('trigger-bubble-transition', {
+      detail: { x, y, image: colImage, path: linkTo }
+    });
+    window.dispatchEvent(event);
+  };
+
   return (
     <div className="collection-bubbles-section">
       <div className="collection-bubbles-container">
-        {collections.map(col => {
+        {collections.map((col, idx) => {
           const isEssential = col.handle === 'essential-t-shirts-plain-color';
           const isGoth = col.handle === 'oversized-apparel';
           
@@ -39,6 +53,8 @@ const CollectionBubbles = ({ activeHandle }) => {
               key={col.id} 
               to={linkTo} 
               className={`collection-bubble-item ${isActive ? 'is-active' : ''}`}
+              style={{ animationDelay: `${idx * 80}ms` }}
+              onClick={(e) => handleBubbleClick(e, linkTo, col.image)}
             >
               <div className="collection-bubble-img-wrapper">
                 <img 
