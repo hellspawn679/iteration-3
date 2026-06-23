@@ -607,3 +607,117 @@
     height: 62px;
   }
 }
+
+/* === PDP LIGHTBOX ZOOM PREVIEW === */
+.pdp-gallery__main-img--clickable {
+  cursor: zoom-in;
+}
+
+.pdp-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 1000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: lightboxFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pdp-lightbox__close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000010;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1;
+  padding-bottom: 4px; /* visually center the times cross */
+}
+
+[data-theme="light"] .pdp-lightbox__close {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #000000;
+}
+
+.pdp-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.08) rotate(90deg);
+}
+
+[data-theme="light"] .pdp-lightbox__close:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.pdp-lightbox__content {
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: lightboxScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pdp-lightbox__img-wrap {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-in;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.pdp-lightbox__img {
+  max-width: 90vw;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
+}
+
+.pdp-lightbox__img--zoomed {
+  transform: scale(2.0);
+  cursor: zoom-out;
+}
+
+@keyframes lightboxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lightboxScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Light Theme Lightbox styles */
+[data-theme="light"] .pdp-lightbox {
+  background-color: rgba(255, 255, 255, 0.95);
+}

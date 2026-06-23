@@ -24,30 +24,36 @@ function App() {
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [flyingItems, setFlyingItems] = useState([]);
   const [transitionData, setTransitionData] = useState(null); // null | { x, y, image, path, state }
+  const navTimerRef = React.useRef(null);
+  const finishTimerRef = React.useRef(null);
 
   useEffect(() => {
     const handleTransition = (e) => {
       const { x, y, image, path } = e.detail;
+
+      // Clear any active transition timeouts to prevent overlapping states
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
+      if (finishTimerRef.current) clearTimeout(finishTimerRef.current);
+
       setTransitionData({ x, y, image, path, state: 'expanding' });
 
-      const navTimer = setTimeout(() => {
+      // Trigger navigation after the 700ms clip-path circle expansion settles
+      navTimerRef.current = setTimeout(() => {
         setTransitionData(prev => prev ? { ...prev, state: 'fading' } : null);
         navigate(path);
-      }, 600);
+      }, 750);
 
-      const finishTimer = setTimeout(() => {
+      // Finish transition when the 500ms fade-out finishes (750ms + 500ms = 1250ms)
+      finishTimerRef.current = setTimeout(() => {
         setTransitionData(null);
-      }, 1100);
-
-      return () => {
-        clearTimeout(navTimer);
-        clearTimeout(finishTimer);
-      };
+      }, 1250);
     };
 
     window.addEventListener('trigger-bubble-transition', handleTransition);
     return () => {
       window.removeEventListener('trigger-bubble-transition', handleTransition);
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
+      if (finishTimerRef.current) clearTimeout(finishTimerRef.current);
     };
   }, [navigate]);
 

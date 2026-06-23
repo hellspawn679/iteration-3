@@ -74,6 +74,39 @@ const ProductDetail = ({ onAddToCart }) => {
     }
   };
 
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState('');
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x, y });
+  };
+
+  const handleImageClick = (img) => {
+    setLightboxImage(img);
+    setIsLightboxOpen(true);
+    setIsZoomed(false);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsLightboxOpen(false);
+        setIsZoomed(false);
+      }
+    };
+    if (isLightboxOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isLightboxOpen]);
+
   useEffect(() => {
     let timer;
     if (cartState === 'animating') {
@@ -220,7 +253,8 @@ const ProductDetail = ({ onAddToCart }) => {
                     <img 
                       src={img} 
                       alt={`${product.name} ${idx + 1}`} 
-                      className="pdp-gallery__main-img" 
+                      className="pdp-gallery__main-img pdp-gallery__main-img--clickable" 
+                      onClick={() => handleImageClick(img)}
                     />
                   </div>
                 ))}
@@ -331,6 +365,50 @@ const ProductDetail = ({ onAddToCart }) => {
           </div>
         </div>
       </div>
+
+      {isLightboxOpen && (
+        <div 
+          className="pdp-lightbox"
+          onClick={() => {
+            setIsLightboxOpen(false);
+            setIsZoomed(false);
+          }}
+        >
+          <button 
+            className="pdp-lightbox__close"
+            onClick={() => {
+              setIsLightboxOpen(false);
+              setIsZoomed(false);
+            }}
+            aria-label="Close Preview"
+          >
+            &times;
+          </button>
+          
+          <div 
+            className="pdp-lightbox__content"
+          >
+            <div 
+              className="pdp-lightbox__img-wrap"
+              onMouseMove={handleMouseMove}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsZoomed(!isZoomed);
+              }}
+              style={{
+                '--zoom-x': `${zoomPos.x}%`,
+                '--zoom-y': `${zoomPos.y}%`
+              }}
+            >
+              <img 
+                src={lightboxImage} 
+                alt="Product Preview Zoomed" 
+                className={`pdp-lightbox__img ${isZoomed ? 'pdp-lightbox__img--zoomed' : ''}`}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
