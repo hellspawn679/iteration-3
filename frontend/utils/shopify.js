@@ -280,37 +280,48 @@ export async function fetchCollections() {
       return true;
     });
 
-    // Resolve cover image and fallback for each collection
+    // Prioritize showing product mockup images inside each collection bubble (dynamic looping slideshow)
     const collectionPromises = filteredCollections.map(async (col) => {
-      let imageSrc = col.image ? col.image.src : null;
+      let imageSrcs = [];
       
-      if (!imageSrc) {
-        try {
-          const prodRes = await fetch(`/collections/${col.handle}/products.json`);
-          if (prodRes.ok) {
-            const prodData = await prodRes.json();
-            if (prodData.products && prodData.products.length > 0) {
-              const firstProduct = prodData.products[0];
-              if (firstProduct.images && firstProduct.images.length > 0) {
-                imageSrc = firstProduct.images[0].src;
+      try {
+        const prodRes = await fetch(`/collections/${col.handle}/products.json`);
+        if (prodRes.ok) {
+          const prodData = await prodRes.json();
+          if (prodData.products && prodData.products.length > 0) {
+            // Get up to 4 products and extract their primary mockups
+            prodData.products.slice(0, 4).forEach(prod => {
+              if (prod.images && prod.images.length > 0) {
+                let src = prod.images[0].src;
+                if (!src.startsWith('http')) {
+                  src = 'https:' + src;
+                }
+                if (!imageSrcs.includes(src)) {
+                  imageSrcs.push(src);
+                }
               }
-            }
+            });
           }
-        } catch (err) {
-          console.error(`Error fetching fallback image for collection ${col.handle}:`, err);
         }
+      } catch (err) {
+        console.error(`Error fetching product images for collection ${col.handle}:`, err);
       }
 
-      // Ensure full HTTPS url
-      if (imageSrc && !imageSrc.startsWith('http')) {
-        imageSrc = 'https:' + imageSrc;
+      // Fallback to explicit collection image if no product images were resolved
+      if (imageSrcs.length === 0 && col.image) {
+        let src = col.image.src;
+        if (!src.startsWith('http')) {
+          src = 'https:' + src;
+        }
+        imageSrcs.push(src);
       }
 
       return {
         id: col.id.toString(),
         title: col.title,
         handle: col.handle,
-        image: imageSrc || '',
+        image: imageSrcs[0] || '', // Fallback single image for general use
+        images: imageSrcs, // Slideshow array of product mockups
         productsCount: col.products_count
       };
     });

@@ -1,6 +1,6 @@
 .collection-bubbles-section {
   width: 100%;
-  padding: 24px 0 16px 0;
+  padding: 4px 0 0 0; /* Minimized outer padding, container vertical padding handles the rest */
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
 }
@@ -9,7 +9,7 @@
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  padding: 0 16px;
+  padding: 20px 16px; /* 20px padding fully accommodates 1.08x scale + 15px shadow glow with zero clipping */
   margin: 0 auto;
   max-width: 1200px;
   scrollbar-width: none; /* Firefox */
@@ -62,6 +62,18 @@
   border-radius: 50%;
   object-fit: cover;
   display: block;
+  animation: bubbleImgFade 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes bubbleImgFade {
+  from {
+    opacity: 0.4;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .collection-bubble-title {
@@ -105,7 +117,7 @@
 
 @media (max-width: 767px) {
   .collection-bubbles-section {
-    padding: 16px 0 12px 0;
+    padding: 0; /* Zero outer padding since container padding is 20px */
   }
   
   .collection-bubble-item {
