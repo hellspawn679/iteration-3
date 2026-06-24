@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Sun, Moon } from 'lucide-react';
+import { ShoppingBag, Search, Sun, Moon } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
+const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) => {
   const [animateCart, setAnimateCart] = useState(false);
 
   useEffect(() => {
@@ -12,6 +12,7 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
     const timer = setTimeout(() => setAnimateCart(false), 500);
     return () => clearTimeout(timer);
   }, [cartCount]);
+
   return (
     <header className="site-header">
       {/* Main Navbar */}
@@ -26,11 +27,8 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
 
           {/* Actions - Right */}
           <div className="nav-actions">
-            <button className="icon-btn" aria-label="Search">
+            <button className="icon-btn" onClick={onOpenSearch} aria-label="Search">
               <Search size={20} strokeWidth={1.5} />
-            </button>
-            <button className="icon-btn" aria-label="Account">
-              <User size={20} strokeWidth={1.5} />
             </button>
             <button className="icon-btn cart-btn" onClick={onOpenCart} aria-label="Cart">
               <ShoppingBag size={20} strokeWidth={1.5} />
@@ -61,3 +59,4 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme }) => {
 };
 
 export default Navbar;
+

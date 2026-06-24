@@ -11,6 +11,7 @@ import EssentialsPage from './components/EssentialsPage';
 import CollectionDetail from './components/CollectionDetail';
 import CollectionBubbles from './components/CollectionBubbles';
 import GothPage from './components/GothPage';
+import SearchOverlay from './components/SearchOverlay';
 
 import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
 import darthLogo from './logo.png';
@@ -19,6 +20,7 @@ import './App.css';
 function App() {
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -142,6 +144,7 @@ function App() {
         onOpenCart={() => setIsCartOpen(true)}
         theme={theme}
         onToggleTheme={toggleTheme}
+        onOpenSearch={() => setIsSearchOpen(true)}
       />
       
       <Routes>
@@ -169,6 +172,10 @@ function App() {
       </Routes>
 
       <Footer />
+
+      {isSearchOpen && (
+        <SearchOverlay onClose={() => setIsSearchOpen(false)} />
+      )}
 
       {isCartOpen && (
         <CartModal 
