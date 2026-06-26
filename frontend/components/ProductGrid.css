@@ -71,6 +71,19 @@
   transform: scale(1.05);
 }
 
+/* Scroll-based swap: shows secondary image when card scrolls past viewport midpoint.
+   On desktop, :hover also works — both can coexist since hover fires on mouse interaction
+   and the scroll class naturally toggles based on position. */
+.product-card.is-scrolled-past .product-card__image--secondary {
+  opacity: 1;
+  transform: scale(1.03);
+}
+
+.product-card.is-scrolled-past .product-card__image--primary {
+  opacity: 0;
+  transform: scale(1.03);
+}
+
 /* Badges */
 .product-card__badge {
   position: absolute;

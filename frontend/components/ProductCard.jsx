@@ -9,7 +9,9 @@ const ProductCard = ({ product, collectionHandle = 'products' }) => {
   const productLink = `/${collectionHandle}/${product.handle}`;
   const cardRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isScrolledPast, setIsScrolledPast] = useState(false);
 
+  // Fade-in on scroll into view (existing behavior)
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
@@ -30,10 +32,34 @@ const ProductCard = ({ product, collectionHandle = 'products' }) => {
     };
   }, []);
 
+  // Swap to secondary image when card scrolls up to touch the header.
+  // Uses a narrow trigger zone at the very top of the viewport (header area).
+  useEffect(() => {
+    if (!product.secondaryImage) return;
+
+    // The trigger zone is a thin strip at the top of the viewport.
+    // Top: 0px, Bottom: -92% means only the top ~8% is active (~67px on a typical phone).
+    // The card's top edge must reach this zone (near the sticky header) to trigger.
+    const scrollObserver = new IntersectionObserver(([entry]) => {
+      setIsScrolledPast(entry.isIntersecting);
+    }, {
+      threshold: 0.0,
+      rootMargin: '0px 0px -80% 0px'
+    });
+
+    if (cardRef.current) {
+      scrollObserver.observe(cardRef.current);
+    }
+
+    return () => {
+      scrollObserver.disconnect();
+    };
+  }, [product.secondaryImage]);
+
   return (
     <div 
       ref={cardRef} 
-      className={`product-card ${isVisible ? 'is-visible' : 'is-hidden'}`}
+      className={`product-card ${isVisible ? 'is-visible' : 'is-hidden'}${isScrolledPast ? ' is-scrolled-past' : ''}`}
     >
       <Link to={productLink} className="product-card__link">
         <div className="product-card__image-wrapper">
