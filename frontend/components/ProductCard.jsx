@@ -32,13 +32,16 @@ const ProductCard = ({ product, collectionHandle = 'products', eager = false }) 
     };
   }, []);
 
-  // Swap to secondary image when card scrolls up to touch the header.
+  // Swap to secondary image when card scrolls up to touch the header on mobile.
   // Uses a narrow trigger zone at the very top of the viewport (header area).
   useEffect(() => {
     if (!product.secondaryImage) return;
 
+    // Only enable scroll-based swap on mobile mode (<= 768px)
+    if (window.innerWidth > 768) return;
+
     // The trigger zone is a thin strip at the top of the viewport.
-    // Top: 0px, Bottom: -92% means only the top ~8% is active (~67px on a typical phone).
+    // Top: 0px, Bottom: -80% means only the top portion is active.
     // The card's top edge must reach this zone (near the sticky header) to trigger.
     const scrollObserver = new IntersectionObserver(([entry]) => {
       setIsScrolledPast(entry.isIntersecting);
