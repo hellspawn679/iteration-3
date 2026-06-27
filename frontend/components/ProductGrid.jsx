@@ -7,11 +7,12 @@ const ProductGrid = ({ products, onAddToCart, collectionHandle = 'products' }) =
     <section id="shop" className="products-section">
       <div className="container">
         <div className="product-grid">
-          {products.map(product => (
+          {products.map((product, index) => (
             <ProductCard 
               key={product.id} 
               product={product} 
-              collectionHandle={collectionHandle} 
+              collectionHandle={collectionHandle}
+              eager={index < 4}
             />
           ))}
         </div>

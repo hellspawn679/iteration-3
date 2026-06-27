@@ -5,7 +5,7 @@ const formatPrice = (price) => {
   return '₹' + Math.round(price).toLocaleString('en-IN');
 };
 
-const ProductCard = ({ product, collectionHandle = 'products' }) => {
+const ProductCard = ({ product, collectionHandle = 'products', eager = false }) => {
   const productLink = `/${collectionHandle}/${product.handle}`;
   const cardRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -67,7 +67,8 @@ const ProductCard = ({ product, collectionHandle = 'products' }) => {
             src={product.image} 
             alt={product.name} 
             className="product-card__image product-card__image--primary" 
-            loading="lazy"
+            loading={eager ? 'eager' : 'lazy'}
+            {...(eager ? { fetchPriority: 'high' } : {})}
           />
           {product.secondaryImage && (
             <img 

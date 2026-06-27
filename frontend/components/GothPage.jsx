@@ -87,11 +87,12 @@ const GothPage = () => {
             </div>
           ) : (
             <div className="goth-product-grid">
-              {products.map(product => (
+              {products.map((product, index) => (
                 <ProductCard 
                   key={product.id} 
                   product={product} 
                   collectionHandle={collectionHandle}
+                  eager={index < 4}
                 />
               ))}
             </div>

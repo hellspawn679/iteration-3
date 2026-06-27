@@ -1,3 +1,20 @@
+/**
+ * Resize a Shopify CDN image URL by inserting a size suffix (e.g. _600x)
+ * before the file extension. Falls back to original URL if parsing fails.
+ * @param {string} url  - Original Shopify CDN image URL
+ * @param {string} size - Size suffix, e.g. '600x' or '300x300'
+ */
+function resizeShopifyImage(url, size = '600x') {
+  if (!url) return url;
+  try {
+    const match = url.match(/^(.*\/[^?#]+?)(\.(jpg|jpeg|png|gif|webp|avif))(.*)$/i);
+    if (match) {
+      return `${match[1]}_${size}${match[2]}${match[4]}`;
+    }
+  } catch (e) { /* fall through */ }
+  return url;
+}
+
 export async function fetchProducts() {
   try {
     const res = await fetch('/products.json');
@@ -10,9 +27,9 @@ export async function fetchProducts() {
       const colorCount = colorOption ? colorOption.values.length : 0;
       const colorValues = colorOption ? colorOption.values : [];
       
-      // Get primary and secondary images
-      const primaryImage = product.images && product.images.length > 0 ? product.images[0].src : '';
-      const secondaryImage = product.images && product.images.length > 1 ? product.images[1].src : '';
+      // Get primary and secondary images — resized for product card grid
+      const primaryImage = product.images && product.images.length > 0 ? resizeShopifyImage(product.images[0].src) : '';
+      const secondaryImage = product.images && product.images.length > 1 ? resizeShopifyImage(product.images[1].src) : '';
       const allImages = product.images ? product.images.map(img => img.src) : [];
       
       // Get pricing info
@@ -230,8 +247,8 @@ export async function fetchCollectionProducts(collectionHandle) {
       const colorCount = colorOption ? colorOption.values.length : 0;
       const colorValues = colorOption ? colorOption.values : [];
       
-      const primaryImage = product.images && product.images.length > 0 ? product.images[0].src : '';
-      const secondaryImage = product.images && product.images.length > 1 ? product.images[1].src : '';
+      const primaryImage = product.images && product.images.length > 0 ? resizeShopifyImage(product.images[0].src) : '';
+      const secondaryImage = product.images && product.images.length > 1 ? resizeShopifyImage(product.images[1].src) : '';
       const allImages = product.images ? product.images.map(img => img.src) : [];
       
       const price = parseFloat(product.variants[0].price);

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, Sun, Moon } from 'lucide-react';
+import { ShoppingBag, Search, Sun, Moon, Menu, X } from 'lucide-react';
 import './Navbar.css';
 
 const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) => {
   const [animateCart, setAnimateCart] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     if (cartCount === 0) return;
@@ -18,11 +19,27 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) =
       {/* Main Navbar */}
       <nav className="navbar">
         <div className="container nav-container">
+          {/* Mobile Menu Button - Left on mobile */}
+          <button 
+            className="icon-btn mobile-menu-btn" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X size={22} strokeWidth={1.5} /> : <Menu size={22} strokeWidth={1.5} />}
+          </button>
+
           {/* Brand Logo - Left */}
           <div className="nav-brand">
             <Link to="/" className="brand-link">
               <span className="brand-title">DARTH</span>
             </Link>
+          </div>
+
+          {/* Nav Links - Center on desktop, overlay drawer on mobile */}
+          <div className={`nav-links ${isMenuOpen ? 'nav-links--open' : ''}`}>
+            <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
+            <Link to="/pages/goth" onClick={() => setIsMenuOpen(false)}>Goth Apparel</Link>
+            <Link to="/pages/essentials" onClick={() => setIsMenuOpen(false)}>Essentials</Link>
           </div>
 
           {/* Actions - Right */}
@@ -59,4 +76,5 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) =
 };
 
 export default Navbar;
+
 

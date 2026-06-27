@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingBag, ChevronLeft } from 'lucide-react';
+import { ShoppingBag, ChevronLeft, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
 import { fetchProduct } from '../utils/shopify';
 import './ProductDetail.css';
 
@@ -350,15 +350,21 @@ const ProductDetail = ({ onAddToCart }) => {
             {/* Trust badges */}
             <div className="pdp-trust">
               <div className="pdp-trust__item">
-                <span className="pdp-trust__icon">🚚</span>
+                <span className="pdp-trust__icon">
+                  <Truck size={16} strokeWidth={1.5} />
+                </span>
                 <span>Free Shipping on ₹999+</span>
               </div>
               <div className="pdp-trust__item">
-                <span className="pdp-trust__icon">↩️</span>
+                <span className="pdp-trust__icon">
+                  <RotateCcw size={16} strokeWidth={1.5} />
+                </span>
                 <span>Easy Returns & Exchange</span>
               </div>
               <div className="pdp-trust__item">
-                <span className="pdp-trust__icon">🔒</span>
+                <span className="pdp-trust__icon">
+                  <ShieldCheck size={16} strokeWidth={1.5} />
+                </span>
                 <span>Secure Payments</span>
               </div>
             </div>

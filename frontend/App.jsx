@@ -39,16 +39,16 @@ function App() {
 
       setTransitionData({ x, y, image, path, state: 'expanding' });
 
-      // Trigger navigation after the 700ms clip-path circle expansion settles
+      // Trigger navigation after the 350ms clip-path circle expansion settles
       navTimerRef.current = setTimeout(() => {
         setTransitionData(prev => prev ? { ...prev, state: 'fading' } : null);
         navigate(path);
-      }, 750);
+      }, 350);
 
-      // Finish transition when the 500ms fade-out finishes (750ms + 500ms = 1250ms)
+      // Finish transition when the 300ms fade-out finishes (350ms + 300ms = 650ms)
       finishTimerRef.current = setTimeout(() => {
         setTransitionData(null);
-      }, 1250);
+      }, 650);
     };
 
     window.addEventListener('trigger-bubble-transition', handleTransition);
