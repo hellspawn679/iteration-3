@@ -13,7 +13,7 @@ import CollectionBubbles from './components/CollectionBubbles';
 import GothPage from './components/GothPage';
 import SearchOverlay from './components/SearchOverlay';
 
-import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
+import { fetchProducts, fetchCollections, addToCart as shopifyAddToCart } from './utils/shopify';
 import darthLogo from './logo.png';
 import './App.css';
 
@@ -79,6 +79,7 @@ function App() {
       setProducts(data);
       setLoadingProducts(false);
     });
+    fetchCollections(); // Prefetch collections so they are cached in memory early
   }, []);
 
   const addToCart = async (product, clickEvent) => {

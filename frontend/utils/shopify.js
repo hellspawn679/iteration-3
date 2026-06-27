@@ -281,72 +281,82 @@ export async function fetchCollectionProducts(collectionHandle) {
   }
 }
 
-export async function fetchCollections() {
-  try {
-    const res = await fetch('/collections.json');
-    if (!res.ok) throw new Error('Failed to fetch Shopify collections');
-    const data = await res.json();
-    
-    // Filter out collections with 0 products or template collections
-    const filteredCollections = data.collections.filter(col => {
-      if (col.products_count === 0) return false;
-      const handle = col.handle.toLowerCase();
-      if (handle === 'frontpage' || handle === 'all' || handle.includes('asset-pack') || handle.includes('example')) {
-        return false;
-      }
-      return true;
-    });
+let collectionsPromise = null;
 
-    // Prioritize showing product mockup images inside each collection bubble (dynamic looping slideshow)
-    const collectionPromises = filteredCollections.map(async (col) => {
-      let imageSrcs = [];
-      
+export function fetchCollections() {
+  if (!collectionsPromise) {
+    collectionsPromise = (async () => {
       try {
-        const prodRes = await fetch(`/collections/${col.handle}/products.json`);
-        if (prodRes.ok) {
-          const prodData = await prodRes.json();
-          if (prodData.products && prodData.products.length > 0) {
-            // Get up to 4 products and extract their primary mockups
-            prodData.products.slice(0, 4).forEach(prod => {
-              if (prod.images && prod.images.length > 0) {
-                let src = prod.images[0].src;
-                if (!src.startsWith('http')) {
-                  src = 'https:' + src;
-                }
-                if (!imageSrcs.includes(src)) {
-                  imageSrcs.push(src);
-                }
-              }
-            });
+        const res = await fetch('/collections.json');
+        if (!res.ok) throw new Error('Failed to fetch Shopify collections');
+        const data = await res.json();
+        
+        // Filter out collections with 0 products or template collections
+        const filteredCollections = data.collections.filter(col => {
+          if (col.products_count === 0) return false;
+          const handle = col.handle.toLowerCase();
+          if (handle === 'frontpage' || handle === 'all' || handle.includes('asset-pack') || handle.includes('example')) {
+            return false;
           }
-        }
-      } catch (err) {
-        console.error(`Error fetching product images for collection ${col.handle}:`, err);
+          return true;
+        });
+
+        // Prioritize showing product mockup images inside each collection bubble (dynamic looping slideshow)
+        const collectionPromises = filteredCollections.map(async (col) => {
+          let imageSrcs = [];
+          
+          try {
+            const prodRes = await fetch(`/collections/${col.handle}/products.json`);
+            if (prodRes.ok) {
+              const prodData = await prodRes.json();
+              if (prodData.products && prodData.products.length > 0) {
+                // Get up to 4 products and extract their primary mockups
+                prodData.products.slice(0, 4).forEach(prod => {
+                  if (prod.images && prod.images.length > 0) {
+                    let src = prod.images[0].src;
+                    if (!src.startsWith('http')) {
+                      src = 'https:' + src;
+                    }
+                    src = resizeShopifyImage(src, '200x');
+                    if (!imageSrcs.includes(src)) {
+                      imageSrcs.push(src);
+                    }
+                  }
+                });
+              }
+            }
+          } catch (err) {
+            console.error(`Error fetching product images for collection ${col.handle}:`, err);
+          }
+
+          // Fallback to explicit collection image if no product images were resolved
+          if (imageSrcs.length === 0 && col.image) {
+            let src = col.image.src;
+            if (!src.startsWith('http')) {
+              src = 'https:' + src;
+            }
+            src = resizeShopifyImage(src, '200x');
+            imageSrcs.push(src);
+          }
+
+          return {
+            id: col.id.toString(),
+            title: col.title,
+            handle: col.handle,
+            image: imageSrcs[0] || '', // Fallback single image for general use
+            images: imageSrcs, // Slideshow array of product mockups
+            productsCount: col.products_count
+          };
+        });
+
+        return await Promise.all(collectionPromises);
+      } catch (error) {
+        console.error('Shopify fetch collections error:', error);
+        collectionsPromise = null; // Reset cache on failure to allow retry
+        return [];
       }
-
-      // Fallback to explicit collection image if no product images were resolved
-      if (imageSrcs.length === 0 && col.image) {
-        let src = col.image.src;
-        if (!src.startsWith('http')) {
-          src = 'https:' + src;
-        }
-        imageSrcs.push(src);
-      }
-
-      return {
-        id: col.id.toString(),
-        title: col.title,
-        handle: col.handle,
-        image: imageSrcs[0] || '', // Fallback single image for general use
-        images: imageSrcs, // Slideshow array of product mockups
-        productsCount: col.products_count
-      };
-    });
-
-    return await Promise.all(collectionPromises);
-  } catch (error) {
-    console.error('Shopify fetch collections error:', error);
-    return [];
+    })();
   }
+  return collectionsPromise;
 }
 
