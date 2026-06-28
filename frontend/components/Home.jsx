@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CollectionBubbles from './CollectionBubbles';
 import ProductCard from './ProductCard';
+import { fetchCollectionProducts } from '../utils/shopify';
 import './Home.css';
 
 import slide1 from '../front_page1.png';
@@ -12,7 +13,7 @@ import slide2Mobile from '../front_page2_mobile.png';
 import catOversized from '../goth_category_oversized_1782672438943.png';
 import catCargos from '../goth_category_cargos_1782672452829.png';
 import catParachute from '../goth_category_parachute_1782672464088.png';
-import catShirts from '../goth_category_shirts_1782672476263.png';
+import catShirts from '../essential.png';
 
 const slides = [
   {
@@ -56,6 +57,8 @@ const campaignCards = [
 
 const Home = ({ products, onAddToCart }) => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [bestSellers, setBestSellers] = useState([]);
+  const [loadingBestSellers, setLoadingBestSellers] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,6 +66,23 @@ const Home = ({ products, onAddToCart }) => {
     }, 6000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    fetchCollectionProducts('best-seller')
+      .then(data => {
+        if (data && data.length > 0) {
+          setBestSellers(data.slice(0, 4));
+        } else {
+          setBestSellers(products ? products.slice(0, 4) : []);
+        }
+        setLoadingBestSellers(false);
+      })
+      .catch(err => {
+        console.error('Error fetching best sellers collection, falling back:', err);
+        setBestSellers(products ? products.slice(0, 4) : []);
+        setLoadingBestSellers(false);
+      });
+  }, [products]);
 
   const nextSlide = () => {
     setActiveSlide(prev => (prev + 1) % slides.length);
@@ -72,18 +92,15 @@ const Home = ({ products, onAddToCart }) => {
     setActiveSlide(prev => (prev - 1 + slides.length) % slides.length);
   };
 
-  // Filter 4 products for best sellers (first 4 items)
-  const bestSellers = products ? products.slice(0, 4) : [];
-
   return (
     <div className="home-page">
       {/* 1. HERO SLIDESHOW BANNER */}
       <section className="hero-slider">
-        <div className="hero-slider__track" style={{ transform: `translateX(-${activeSlide * 100}%)` }}>
+        <div className="hero-slider__track">
           {slides.map((slide, idx) => (
             <div 
               key={idx} 
-              className="hero-slider__slide" 
+              className={`hero-slider__slide ${activeSlide === idx ? 'is-active' : ''}`}
               style={{ 
                 '--desktop-bg': `url(${slide.desktopImage})`,
                 '--mobile-bg': `url(${slide.mobileImage})`

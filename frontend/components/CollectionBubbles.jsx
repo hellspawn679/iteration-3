@@ -59,7 +59,11 @@ const CollectionBubbles = ({ activeHandle }) => {
 
   useEffect(() => {
     fetchCollections().then(data => {
-      setCollections(data);
+      const filtered = data.filter(col => {
+        const handle = col.handle.toLowerCase();
+        return handle !== 'best-sellers' && handle !== 'best-seller';
+      });
+      setCollections(filtered);
       setLoading(false);
     });
   }, []);

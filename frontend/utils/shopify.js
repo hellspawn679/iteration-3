@@ -309,7 +309,7 @@ export function fetchCollections() {
         const filteredCollections = data.collections.filter(col => {
           if (col.products_count === 0) return false;
           const handle = col.handle.toLowerCase();
-          if (handle === 'frontpage' || handle === 'all' || handle.includes('asset-pack') || handle.includes('example')) {
+          if (handle === 'frontpage' || handle === 'all' || handle === 'best-sellers' || handle === 'best-seller' || handle.includes('asset-pack') || handle.includes('example')) {
             return false;
           }
           return true;
