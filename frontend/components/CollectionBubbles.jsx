@@ -21,16 +21,16 @@ const CollectionBubbleItem = ({ col, idx, activeHandle, handleBubbleClick }) => 
     : col.image;
 
   const isEssential = col.handle === 'essential-t-shirts-plain-color';
-  const isGoth = col.handle === 'oversized-apparel';
+  const isUrban = col.handle === 'oversized-apparel';
   
   let linkTo = `/${col.handle}`;
   if (isEssential) linkTo = '/pages/essentials';
-  if (isGoth) linkTo = '/pages/goth';
+  if (isUrban) linkTo = '/pages/urban-style';
   
   const isActive = 
     activeHandle === col.handle || 
     (isEssential && (activeHandle === 'essentials' || activeHandle === 'essential-t-shirts-plain-color')) ||
-    (isGoth && (activeHandle === 'goth' || activeHandle === 'oversized-apparel'));
+    (isUrban && (activeHandle === 'urban-style' || activeHandle === 'oversized-apparel'));
 
   return (
     <Link 

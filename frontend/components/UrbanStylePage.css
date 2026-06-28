@@ -1,25 +1,25 @@
-.goth-page {
+.urban-page {
   background-color: var(--bg-color);
   min-height: 100vh;
 }
 
 /* SECTION 1: Two-Image Grid Banner */
-.goth-grid-banner {
+.urban-grid-banner {
   padding: 30px 0;
 }
 
-.goth-grid-row {
+.urban-grid-row {
   display: flex;
   gap: 20px;
   width: 100%;
 }
 
-.goth-grid-col {
+.urban-grid-col {
   flex: 1;
   min-width: 0;
 }
 
-.goth-banner-img {
+.urban-banner-img {
   width: 100%;
   height: auto;
   display: block;
@@ -28,11 +28,11 @@
 }
 
 /* SECTION 2: Slideshow Hero Banner */
-.goth-hero {
+.urban-hero {
   padding: 10px 0;
 }
 
-.goth-hero__link-wrapper {
+.urban-hero__link-wrapper {
   display: block;
   width: 100%;
   max-width: 1300px;
@@ -40,7 +40,7 @@
   padding: 0 50px;
 }
 
-.goth-hero__image-container {
+.urban-hero__image-container {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -48,7 +48,7 @@
   background-color: var(--bg-medium-dim);
 }
 
-.goth-hero__bg-img {
+.urban-hero__bg-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -56,11 +56,11 @@
   transition: transform 0.8s ease;
 }
 
-.goth-hero__image-container:hover .goth-hero__bg-img {
+.urban-hero__image-container:hover .urban-hero__bg-img {
   transform: scale(1.03);
 }
 
-.goth-hero__overlay {
+.urban-hero__overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -72,7 +72,7 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-.goth-hero__cta-btn {
+.urban-hero__cta-btn {
   padding: 16px 40px;
   font-weight: 500;
   letter-spacing: 0.15em;
@@ -85,22 +85,22 @@
   transition: all 0.3s ease;
 }
 
-.goth-hero__cta-btn:hover {
+.urban-hero__cta-btn:hover {
   background: var(--accent-light);
   transform: translateY(-2px);
 }
 
 /* SECTION 3: Collection Product Grid */
-.goth-collection-section {
+.urban-collection-section {
   padding: 60px 0;
 }
 
-.goth-section-header {
+.urban-section-header {
   text-align: center;
   margin-bottom: 45px;
 }
 
-.goth-section-title {
+.urban-section-title {
   font-size: 24px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -108,27 +108,27 @@
   color: var(--text-primary);
 }
 
-.goth-section-subtitle {
+.urban-section-subtitle {
   font-size: 13px;
   color: var(--text-muted);
 }
 
 /* 5 Column Grid for Desktop */
-.goth-product-grid {
+.urban-product-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
 }
 
 /* Loading & Empty States */
-.goth-loading {
+.urban-loading {
   min-height: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.goth-loading__spinner {
+.urban-loading__spinner {
   width: 32px;
   height: 32px;
   border: 2px solid var(--border-color);
@@ -137,7 +137,7 @@
   animation: spin 0.7s linear infinite;
 }
 
-.goth-empty {
+.urban-empty {
   text-align: center;
   padding: 40px 20px;
   color: var(--text-secondary);
@@ -145,34 +145,34 @@
 
 /* RESPONSIVE STYLING */
 @media (max-width: 1200px) {
-  .goth-product-grid {
+  .urban-product-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (max-width: 992px) {
   .container-full,
-  .goth-hero__link-wrapper {
+  .urban-hero__link-wrapper {
     padding: 0 25px;
   }
   
-  .goth-product-grid {
+  .urban-product-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
   }
 }
 
 @media (max-width: 768px) {
-  .goth-grid-row {
+  .urban-grid-row {
     flex-direction: column;
     gap: 15px;
   }
   
-  .goth-section-title {
+  .urban-section-title {
     font-size: 20px;
   }
   
-  .goth-product-grid {
+  .urban-product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
@@ -180,15 +180,15 @@
 
 @media (max-width: 576px) {
   .container-full,
-  .goth-hero__link-wrapper {
+  .urban-hero__link-wrapper {
     padding: 0 15px;
   }
   
-  .goth-grid-banner {
+  .urban-grid-banner {
     padding: 15px 0;
   }
   
-  .goth-hero__cta-btn {
+  .urban-hero__cta-btn {
     padding: 12px 30px;
     font-size: 11px;
   }

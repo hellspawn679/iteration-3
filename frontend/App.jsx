@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
@@ -8,8 +8,34 @@ import ProductDetail from './components/ProductDetail';
 import EssentialsPage from './components/EssentialsPage';
 import CollectionDetail from './components/CollectionDetail';
 import CollectionBubbles from './components/CollectionBubbles';
-import GothPage from './components/GothPage';
+import UrbanStylePage from './components/UrbanStylePage';
 import SearchOverlay from './components/SearchOverlay';
+import Home from './components/Home';
+
+const announcements = [
+  "★ GET FLAT 10% OFF ON ALL PREPAID ORDERS ★",
+  "★ FREE SHIPPING ON ORDERS ABOVE ₹999 ★",
+  "★ NEW ARRIVALS: GOTHIC STREETWEAR OUT NOW ★"
+];
+
+const AnnouncementBar = () => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex(prev => (prev + 1) % announcements.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="announcement-bar">
+      <div className="announcement-bar__text">
+        {announcements[index]}
+      </div>
+    </div>
+  );
+};
 
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
@@ -20,6 +46,8 @@ import './App.css';
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -141,30 +169,29 @@ function App() {
 
   return (
     <div className="app-container">
+      <AnnouncementBar />
       <Navbar
         cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
         onOpenCart={() => setIsCartOpen(true)}
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenSearch={() => setIsSearchOpen(true)}
+        isHome={isHome}
       />
       
       <Routes>
         <Route path="/" element={
-          <main>
-            <CollectionBubbles />
-            {loadingProducts ? (
-              <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                Loading products...
-              </div>
-            ) : (
-              <ProductGrid products={products} onAddToCart={addToCart} />
-            )}
-          </main>
+          loadingProducts ? (
+            <div style={{ minHeight: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>
+              Loading products...
+            </div>
+          ) : (
+            <Home products={products} onAddToCart={addToCart} />
+          )
         } />
         
         <Route path="/pages/essentials" element={<EssentialsPage />} />
-        <Route path="/pages/goth" element={<GothPage />} />
+        <Route path="/pages/urban-style" element={<UrbanStylePage />} />
         <Route path="/pages/privacy-policy" element={
           <Suspense fallback={
             <div style={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>

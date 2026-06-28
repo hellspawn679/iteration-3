@@ -222,3 +222,41 @@
   }
 }
 
+/* === TRANSPARENT NAVBAR OVERLAYS === */
+.site-header--transparent {
+  position: absolute;
+  top: 33px; /* height of announcement-bar */
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: transparent !important;
+}
+
+.navbar--transparent {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Force elements to white inside transparent header for contrast over gothic banners */
+.site-header--transparent .brand-title,
+.site-header--transparent .nav-links a,
+.site-header--transparent .icon-btn {
+  color: #ffffff !important;
+}
+
+.site-header--transparent .nav-links a::after {
+  background-color: #ffffff !important;
+}
+
+.site-header--transparent .mobile-menu-btn {
+  color: #ffffff !important;
+}
+
+/* For mobile responsive transparent links box */
+@media (max-width: 768px) {
+  .site-header--transparent .nav-links {
+    background: rgba(0, 0, 0, 0.95) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+}
+

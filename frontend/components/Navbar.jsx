@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingBag, Search, Sun, Moon, Menu, X } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) => {
+const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch, isHome }) => {
   const [animateCart, setAnimateCart] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -15,9 +15,9 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) =
   }, [cartCount]);
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${isHome ? 'site-header--transparent' : ''}`}>
       {/* Main Navbar */}
-      <nav className="navbar">
+      <nav className={`navbar ${isHome ? 'navbar--transparent' : ''}`}>
         <div className="container nav-container">
           {/* Mobile Menu Button - Left on mobile */}
           <button 
@@ -38,7 +38,7 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch }) =
           {/* Nav Links - Center on desktop, overlay drawer on mobile */}
           <div className={`nav-links ${isMenuOpen ? 'nav-links--open' : ''}`}>
             <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
-            <Link to="/pages/goth" onClick={() => setIsMenuOpen(false)}>Goth Apparel</Link>
+            <Link to="/pages/urban-style" onClick={() => setIsMenuOpen(false)}>Urban Style</Link>
             <Link to="/pages/essentials" onClick={() => setIsMenuOpen(false)}>Essentials</Link>
           </div>
 
