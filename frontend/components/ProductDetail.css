@@ -900,3 +900,34 @@
     margin-bottom: 24px;
   }
 }
+
+/* === PROMO BANNER === */
+.pdp-info__banner {
+  margin: 15px 0 25px 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.pdp-info__banner-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Hide light banner by default (dark mode active) */
+.pdp-info__banner-img--light {
+  display: none;
+}
+.pdp-info__banner-img--dark {
+  display: block;
+}
+
+/* Toggle visibility when light theme is active */
+[data-theme="light"] .pdp-info__banner-img--dark {
+  display: none;
+}
+[data-theme="light"] .pdp-info__banner-img--light {
+  display: block;
+}

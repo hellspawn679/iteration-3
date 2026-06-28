@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingBag, ChevronLeft, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
 import { fetchProduct, fetchCollectionProducts } from '../utils/shopify';
 import ProductCard from './ProductCard';
+import darkBanner from '../back.png';
+import lightBanner from '../white.png';
 import './ProductGrid.css';
 import './ProductDetail.css';
 
@@ -460,6 +462,12 @@ const ProductDetail = ({ onAddToCart }) => {
                   BUY IT NOW
                 </button>
               )}
+            </div>
+
+            {/* Banner Image */}
+            <div className="pdp-info__banner">
+              <img src={darkBanner} alt="Website Banner" className="pdp-info__banner-img pdp-info__banner-img--dark" />
+              <img src={lightBanner} alt="Website Banner" className="pdp-info__banner-img pdp-info__banner-img--light" />
             </div>
 
             {/* Accordion Tabs */}
