@@ -32,29 +32,6 @@ const slides = [
   }
 ];
 
-const campaignCards = [
-  {
-    image: slide1,
-    title: 'GOTHIC GRUNGE LOOKBOOK',
-    tag: 'EDITORIAL'
-  },
-  {
-    image: slide2,
-    title: 'STREET WEAR UTILITY',
-    tag: 'STREET'
-  },
-  {
-    image: slide2Mobile,
-    title: 'DISPOSABLE FLASH AESTHETICS',
-    tag: 'VINTAGE'
-  },
-  {
-    image: catOversized,
-    title: 'OVERSIZED INSPIRED REELS',
-    tag: 'REELS'
-  }
-];
-
 const Home = ({ products, onAddToCart }) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [bestSellers, setBestSellers] = useState([]);
@@ -222,20 +199,87 @@ const Home = ({ products, onAddToCart }) => {
         </section>
       )}
 
-      {/* 6. LOOKBOOK CAMPAIGN CAROUSEL */}
-      <section className="lookbook-section container">
-        <h3 className="section-title">LOOKBOOK CAMPAIGNS</h3>
-        <div className="lookbook-grid">
-          {campaignCards.map((card, idx) => (
-            <div key={idx} className="lookbook-card" style={{ backgroundImage: `url(${card.image})` }}>
-              <div className="lookbook-card__overlay">
-                <div className="lookbook-card__info">
-                  <span className="lookbook-card__tag">{card.tag}</span>
-                  <h4 className="lookbook-card__title">{card.title}</h4>
-                </div>
-              </div>
+      {/* 7. FREQUENTLY ASKED QUESTIONS */}
+      <section className="faq-section container">
+        <h3 className="section-title">FREQUENTLY ASKED QUESTIONS</h3>
+        <div className="faq-container">
+          <details className="faq-item">
+            <summary className="faq-question">
+              <span>WHAT MAKES DARTH DIFFERENT?</span>
+              <span className="faq-toggle">
+                <span className="faq-toggle-line faq-toggle-line--vertical"></span>
+                <span className="faq-toggle-line faq-toggle-line--horizontal"></span>
+              </span>
+            </summary>
+            <div className="faq-answer">
+              <p>DARTH is built for those who value individuality over trends. Every design is created with purpose, combining bold visuals, premium craftsmanship, and modern streetwear aesthetics. We don't chase hype—we create pieces that people genuinely connect with.</p>
             </div>
-          ))}
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              <span>WHY DO OUR T-SHIRTS FEEL PREMIUM?</span>
+              <span className="faq-toggle">
+                <span className="faq-toggle-line faq-toggle-line--vertical"></span>
+                <span className="faq-toggle-line faq-toggle-line--horizontal"></span>
+              </span>
+            </summary>
+            <div className="faq-answer">
+              <p>Quality comes first. We use heavyweight, soft-touch fabrics, relaxed oversized fits, and durable prints designed to last. Every piece is made to feel as good as it looks, delivering comfort you can wear every day.</p>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              <span>WHO IS DARTH MADE FOR?</span>
+              <span className="faq-toggle">
+                <span className="faq-toggle-line faq-toggle-line--vertical"></span>
+                <span className="faq-toggle-line faq-toggle-line--horizontal"></span>
+              </span>
+            </summary>
+            <div className="faq-answer">
+              <p>DARTH is for creators, dreamers, risk-takers, and anyone who prefers expressing themselves instead of following the crowd. If you appreciate quality, originality, and confidence, you're in the right place.</p>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              <span>HOW LONG WILL MY ORDER TAKE TO ARRIVE?</span>
+              <span className="faq-toggle">
+                <span className="faq-toggle-line faq-toggle-line--vertical"></span>
+                <span className="faq-toggle-line faq-toggle-line--horizontal"></span>
+              </span>
+            </summary>
+            <div className="faq-answer">
+              <p>Orders are typically processed within <strong>2–4 business days</strong>. Once shipped, most deliveries arrive within <strong>5–8 business days</strong>, depending on your location. You'll receive a tracking link as soon as your order is on its way.</p>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              <span>CAN I RETURN OR EXCHANGE MY ORDER?</span>
+              <span className="faq-toggle">
+                <span className="faq-toggle-line faq-toggle-line--vertical"></span>
+                <span className="faq-toggle-line faq-toggle-line--horizontal"></span>
+              </span>
+            </summary>
+            <div className="faq-answer">
+              <p>Yes. We accept exchanges for size issues and products with manufacturing defects, provided they're unused and in their original condition. Please contact our support team within the eligible return window after delivery for assistance.</p>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              <span>WHAT DOES DARTH STAND FOR?</span>
+              <span className="faq-toggle">
+                <span className="faq-toggle-line faq-toggle-line--vertical"></span>
+                <span className="faq-toggle-line faq-toggle-line--horizontal"></span>
+              </span>
+            </summary>
+            <div className="faq-answer">
+              <p>DARTH represents confidence, authenticity, and self-expression. Our clothing isn't made to help you fit in—it's made for people comfortable standing out. Wear what reflects who you are, not what's trending.</p>
+            </div>
+          </details>
         </div>
       </section>
     </div>
