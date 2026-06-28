@@ -58,6 +58,24 @@ const ProductDetail = ({ onAddToCart }) => {
         console.error('Error fetching collection products:', err);
       });
   }, [handle, collection]);
+ 
+  const recRef = React.useRef(null);
+  const [recVisible, setRecVisible] = useState(false);
+
+  useEffect(() => {
+    if (relatedProducts.length === 0) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setRecVisible(true);
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.1 });
+
+    if (recRef.current) {
+      observer.observe(recRef.current);
+    }
+    return () => observer.disconnect();
+  }, [relatedProducts]);
 
   const [openTabs, setOpenTabs] = useState({
     description: true,
@@ -566,10 +584,10 @@ const ProductDetail = ({ onAddToCart }) => {
 
       {/* You May Also Like Section */}
       {relatedProducts.length > 0 && (
-        <div className="pdp-recommendations">
+        <div ref={recRef} className={`pdp-recommendations ${recVisible ? 'is-visible' : ''}`}>
           <div className="container">
             <h2 className="pdp-recommendations__title">YOU MAY ALSO LIKE</h2>
-            <div className="product-grid">
+            <div className="pdp-recommendations__grid">
               {relatedProducts.map(prod => (
                 <ProductCard 
                   key={prod.id} 
