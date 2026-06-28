@@ -238,8 +238,22 @@ export async function addToCart(variantId, quantity = 1) {
 
 export async function fetchCollectionProducts(collectionHandle) {
   try {
-    const res = await fetch(`/collections/${collectionHandle}/products.json`);
-    if (!res.ok) throw new Error(`Failed to fetch Shopify collection products for: ${collectionHandle}`);
+    const url = (collectionHandle === 'all' || collectionHandle === 'products')
+      ? '/products.json'
+      : `/collections/${collectionHandle}/products.json`;
+    
+    let res = await fetch(url).catch(() => null);
+    
+    // Fall back to general products list if specific collection fails/does not exist
+    if ((!res || !res.ok) && url !== '/products.json') {
+      console.warn(`[shopify.js:fetchCollectionProducts] Failed to fetch collection "${collectionHandle}". Falling back to /products.json`);
+      res = await fetch('/products.json').catch(() => null);
+    }
+    
+    if (!res || !res.ok) {
+      throw new Error(`Failed to fetch products for handle: ${collectionHandle}`);
+    }
+    
     const data = await res.json();
     
     return data.products.map(product => {
