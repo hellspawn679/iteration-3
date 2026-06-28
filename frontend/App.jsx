@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import CartModal from './components/CartModal';
 import ProductDetail from './components/ProductDetail';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsOfService from './components/TermsOfService';
 import EssentialsPage from './components/EssentialsPage';
 import CollectionDetail from './components/CollectionDetail';
 import CollectionBubbles from './components/CollectionBubbles';
 import GothPage from './components/GothPage';
 import SearchOverlay from './components/SearchOverlay';
+
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
 
 import { fetchProducts, fetchCollections, addToCart as shopifyAddToCart } from './utils/shopify';
 import darthLogo from './logo.png';
@@ -164,8 +165,24 @@ function App() {
         
         <Route path="/pages/essentials" element={<EssentialsPage />} />
         <Route path="/pages/goth" element={<GothPage />} />
-        <Route path="/pages/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/pages/terms-of-service" element={<TermsOfService />} />
+        <Route path="/pages/privacy-policy" element={
+          <Suspense fallback={
+            <div style={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>
+              Loading...
+            </div>
+          }>
+            <PrivacyPolicy />
+          </Suspense>
+        } />
+        <Route path="/pages/terms-of-service" element={
+          <Suspense fallback={
+            <div style={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>
+              Loading...
+            </div>
+          }>
+            <TermsOfService />
+          </Suspense>
+        } />
         
         {/* Dynamic collection and product routes matching Shopify's URL structures */}
         <Route path="/:collection" element={<CollectionDetail />} />

@@ -1,15 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingBag, ChevronLeft, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
-import { fetchProduct } from '../utils/shopify';
+import { fetchProduct, fetchCollectionProducts } from '../utils/shopify';
+import ProductCard from './ProductCard';
+import './ProductGrid.css';
 import './ProductDetail.css';
 
 const formatPrice = (price) => {
   return '₹' + Math.round(price).toLocaleString('en-IN');
 };
 
+const getColorValue = (colorName) => {
+  const name = colorName.toLowerCase();
+  const map = {
+    'acid grey': '#5a5a5d',
+    'navy blue': '#1c2235',
+    'cobalt blue': '#0047ab',
+    'charcoal': '#36454f',
+    'burgundy': '#5c0617',
+    'olive': '#3d4a3e',
+    'off white': '#faf9f6',
+    'off-white': '#faf9f6',
+    'black': '#000000',
+    'white': '#ffffff',
+    'red': '#b80f0a',
+    'grey': '#808080',
+    'blue': '#1b365d'
+  };
+  return map[name] || name;
+};
+
 const ProductDetail = ({ onAddToCart }) => {
-  const { handle } = useParams();
+  const { handle, collection } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,6 +40,52 @@ const ProductDetail = ({ onAddToCart }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [currentVariant, setCurrentVariant] = useState(null);
   const [cartState, setCartState] = useState('idle'); // 'idle' | 'animating'
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  useEffect(() => {
+    if (!handle) return;
+    // Fallback to 'all' if collection parameter is missing, products, or pages
+    const targetColl = (collection && collection !== 'products' && collection !== 'pages') ? collection : 'all';
+    
+    fetchCollectionProducts(targetColl)
+      .then(products => {
+        const filtered = products.filter(p => p.handle !== handle);
+        setRelatedProducts(filtered.slice(0, 4));
+      })
+      .catch(err => {
+        console.error('Error fetching collection products:', err);
+      });
+  }, [handle, collection]);
+
+  const [openTabs, setOpenTabs] = useState({
+    description: true,
+    shipping: false,
+    details: false
+  });
+
+  const toggleTab = (tab) => {
+    setOpenTabs(prev => ({
+      ...prev,
+      [tab]: !prev[tab]
+    }));
+  };
+
+  const isOptionValueAvailable = (optionName, optionValue) => {
+    if (!product || !product.variants) return true;
+    const optIdx = product.options.findIndex(opt => opt.name === optionName);
+    if (optIdx === -1) return true;
+
+    // Check if there is any available variant with this option value, matching other currently selected options
+    return product.variants.some(v => {
+      if (!v.available) return false;
+      return product.options.every((opt, idx) => {
+        if (idx === optIdx) {
+          return v.options[idx] === optionValue;
+        }
+        return v.options[idx] === selectedOptions[`option${idx + 1}`];
+      });
+    });
+  };
 
   // Derive displayImages at the top so hooks can safely access it
   const selectedColor = (product && product.colorOptionIdx > 0)
@@ -184,6 +252,23 @@ const ProductDetail = ({ onAddToCart }) => {
     }
   };
 
+  const handleBuyItNow = async (e) => {
+    if (currentVariant && currentVariant.available) {
+      try {
+        await onAddToCart({
+          id: currentVariant.id,
+          name: `${product.name} - ${currentVariant.title}`,
+          price: currentVariant.price,
+          image: currentVariant.featured_image || activeImage,
+          handle: product.handle
+        }, e);
+        window.location.href = '/checkout';
+      } catch (err) {
+        console.error('Error in Buy It Now:', err);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="pdp-loading">
@@ -226,7 +311,7 @@ const ProductDetail = ({ onAddToCart }) => {
         <div className="pdp-layout">
           {/* Gallery */}
           <div className="pdp-gallery">
-                      {/* Thumbnails on left */}
+            {/* Thumbnails on left */}
             {displayImages && displayImages.length > 1 && (
               <div className="pdp-gallery__thumbs">
                 {displayImages.map((img, idx) => (
@@ -283,6 +368,15 @@ const ProductDetail = ({ onAddToCart }) => {
           <div className="pdp-info">
             <h1 className="pdp-info__title">{product.name}</h1>
             
+            {/* Cotton/GSM Detail Badges */}
+            {product.type && (product.type.toLowerCase().includes('t-shirt') || product.type.toLowerCase().includes('apparel')) && (
+              <div className="pdp-detail-boxes">
+                <span className="pdp-detail-box">100% COTTON</span>
+                <span className="pdp-detail-box">220 GSM</span>
+                <span className="pdp-detail-box">OVERSIZED FIT</span>
+              </div>
+            )}
+
             {/* Pricing */}
             <div className="pdp-info__pricing">
               {currentCompareAt && currentCompareAt > currentPrice ? (
@@ -299,26 +393,46 @@ const ProductDetail = ({ onAddToCart }) => {
             <p className="pdp-info__tax-note">Tax included. Shipping calculated at checkout.</p>
 
             {/* Variant Options */}
-            {product.options && product.options.map((opt, optIdx) => (
-              <div key={opt.name} className="pdp-option">
-                <div className="pdp-option__label">
-                  {opt.name}: <span className="pdp-option__selected">{selectedOptions[`option${optIdx + 1}`]}</span>
-                </div>
-                <div className="pdp-option__values">
-                  {opt.values.map(val => (
-                    <button
-                      key={val}
-                      className={`pdp-option__btn ${selectedOptions[`option${optIdx + 1}`] === val ? 'pdp-option__btn--active' : ''}`}
-                      onClick={() => handleOptionChange(optIdx + 1, val)}
-                    >
-                      {val}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
+            {product.options && product.options.map((opt, optIdx) => {
+              const isColor = opt.name.toLowerCase() === 'color';
+              return (
+                <div key={opt.name} className={`pdp-option pdp-option--${opt.name.toLowerCase()}`}>
+                  <div className="pdp-option__label">
+                    {opt.name}: <span className="pdp-option__selected">{selectedOptions[`option${optIdx + 1}`]}</span>
+                  </div>
+                  <div className="pdp-option__values">
+                    {opt.values.map(val => {
+                      const isActive = selectedOptions[`option${optIdx + 1}`] === val;
+                      const isOptionAvailable = isOptionValueAvailable(opt.name, val);
 
-            {/* Add to Cart */}
+                      if (isColor) {
+                        return (
+                          <button
+                            key={val}
+                            className={`pdp-option__swatch ${isActive ? 'pdp-option__swatch--active' : ''} ${!isOptionAvailable ? 'pdp-option__swatch--unavailable' : ''}`}
+                            style={{ backgroundColor: getColorValue(val) }}
+                            onClick={() => handleOptionChange(optIdx + 1, val)}
+                            title={val}
+                          />
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={val}
+                          className={`pdp-option__btn ${isActive ? 'pdp-option__btn--active' : ''} ${!isOptionAvailable ? 'pdp-option__btn--unavailable' : ''}`}
+                          onClick={() => handleOptionChange(optIdx + 1, val)}
+                        >
+                          {val}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Add to Cart / Buy Now CTAs */}
             <div className="pdp-actions">
               <button 
                 className={`pdp-actions__atc ${cartState === 'animating' ? 'animate' : ''}`}
@@ -337,15 +451,85 @@ const ProductDetail = ({ onAddToCart }) => {
                   {!isAvailable ? 'Sold Out' : 'Add to Cart'}
                 </span>
               </button>
+
+              {isAvailable && (
+                <button
+                  className="pdp-actions__buy-now"
+                  onClick={handleBuyItNow}
+                >
+                  BUY IT NOW
+                </button>
+              )}
             </div>
 
-            {/* Description */}
-            {product.description && (
-              <div className="pdp-description">
-                <h3 className="pdp-description__title">Description</h3>
-                <div className="pdp-description__content" dangerouslySetInnerHTML={{ __html: product.description }} />
+            {/* Accordion Tabs */}
+            <div className="pdp-tabs">
+              {product.description && (
+                <div className="pdp-tab">
+                  <button 
+                    className={`pdp-tab__trigger ${openTabs.description ? 'pdp-tab__trigger--open' : ''}`}
+                    onClick={() => toggleTab('description')}
+                  >
+                    <span>Description</span>
+                    <span className="pdp-tab__icon">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 4.5L6 8.5L10 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  </button>
+                  <div className={`pdp-tab__content ${openTabs.description ? 'pdp-tab__content--open' : ''}`}>
+                    <div className="pdp-tab__inner" dangerouslySetInnerHTML={{ __html: product.description }} />
+                  </div>
+                </div>
+              )}
+
+              <div className="pdp-tab">
+                <button 
+                  className={`pdp-tab__trigger ${openTabs.shipping ? 'pdp-tab__trigger--open' : ''}`}
+                  onClick={() => toggleTab('shipping')}
+                >
+                  <span>Shipping & Returns</span>
+                  <span className="pdp-tab__icon">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 4.5L6 8.5L10 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </button>
+                <div className={`pdp-tab__content ${openTabs.shipping ? 'pdp-tab__content--open' : ''}`}>
+                  <div className="pdp-tab__inner">
+                    <p>Free shipping across India on all orders above ₹999. A shipping charge of ₹99 is applicable for orders below ₹999.</p>
+                    <p>We dispatch orders within 24-48 hours. Delivery takes 3-7 business days depending on your location.</p>
+                    <p>Easy 7-day returns & exchanges. Simply raise a request via our support within 7 days of delivery.</p>
+                  </div>
+                </div>
               </div>
-            )}
+
+              <div className="pdp-tab">
+                <button 
+                  className={`pdp-tab__trigger ${openTabs.details ? 'pdp-tab__trigger--open' : ''}`}
+                  onClick={() => toggleTab('details')}
+                >
+                  <span>Material & Wash Care</span>
+                  <span className="pdp-tab__icon">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 4.5L6 8.5L10 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </button>
+                <div className={`pdp-tab__content ${openTabs.details ? 'pdp-tab__content--open' : ''}`}>
+                  <div className="pdp-tab__inner">
+                    <ul>
+                      <li>100% Premium Combed Cotton</li>
+                      <li>Heavyweight 220-240 GSM Fabric</li>
+                      <li>Super-soft silicone wash finish</li>
+                      <li>High-density graphic print</li>
+                      <li>Cold machine wash inside out</li>
+                      <li>Do not iron directly on print</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Trust badges */}
             <div className="pdp-trust">
@@ -371,6 +555,24 @@ const ProductDetail = ({ onAddToCart }) => {
           </div>
         </div>
       </div>
+
+      {/* You May Also Like Section */}
+      {relatedProducts.length > 0 && (
+        <div className="pdp-recommendations">
+          <div className="container">
+            <h2 className="pdp-recommendations__title">YOU MAY ALSO LIKE</h2>
+            <div className="product-grid">
+              {relatedProducts.map(prod => (
+                <ProductCard 
+                  key={prod.id} 
+                  product={prod} 
+                  collectionHandle={collection || 'products'} 
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {isLightboxOpen && (
         <div 
