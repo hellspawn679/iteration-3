@@ -28,23 +28,19 @@
 .brand-link {
   text-decoration: none;
   color: inherit;
+  display: flex;
+  align-items: center;
 }
 
-.brand-title {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  color: var(--text-primary);
-  transition: letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.nav-logo {
+  max-height: 28px;
+  width: auto;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
 
-.brand-link:hover .brand-title {
-  letter-spacing: 0.38em;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
-}
-
-[data-theme="light"] .brand-link:hover .brand-title {
-  text-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+.brand-link:hover .nav-logo {
+  transform: scale(1.05);
 }
 
 /* Nav Links */
@@ -217,8 +213,8 @@
     transform: none;
   }
 
-  .brand-title {
-    font-size: 20px;
+  .nav-logo {
+    max-height: 24px;
   }
 }
 
@@ -238,7 +234,6 @@
 }
 
 /* Force elements to white inside transparent header for contrast over gothic banners */
-.site-header--transparent .brand-title,
 .site-header--transparent .nav-links a,
 .site-header--transparent .icon-btn {
   color: #ffffff !important;

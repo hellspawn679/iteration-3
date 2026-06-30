@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Search, Sun, Moon, Menu, X } from 'lucide-react';
+import logoDark from '../logo_dark.png';
+import logoWhite from '../logo_white.png';
 import './Navbar.css';
 
-const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch, isHome }) => {
+const Navbar = ({ cartCount, onOpenCart, theme, onOpenSearch, isHome }) => {
   const [animateCart, setAnimateCart] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -31,7 +33,11 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch, isH
           {/* Brand Logo - Left */}
           <div className="nav-brand">
             <Link to="/" className="brand-link">
-              <span className="brand-title">DARTH</span>
+              <img 
+                src={isHome || theme === 'dark' ? logoWhite : logoDark} 
+                alt="DARTH" 
+                className="nav-logo" 
+              />
             </Link>
           </div>
 
@@ -56,18 +62,6 @@ const Navbar = ({ cartCount, onOpenCart, theme, onToggleTheme, onOpenSearch, isH
               )}
             </button>
 
-            {/* Theme Toggle */}
-            <button
-              className="icon-btn theme-toggle"
-              onClick={onToggleTheme}
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            >
-              {theme === 'dark'
-                ? <Sun size={18} strokeWidth={1.5} />
-                : <Moon size={18} strokeWidth={1.5} />
-              }
-            </button>
           </div>
         </div>
       </nav>

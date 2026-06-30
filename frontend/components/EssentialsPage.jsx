@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchCollectionProducts } from '../utils/shopify';
 import ProductCard from './ProductCard';
 import CollectionBubbles from './CollectionBubbles';
+import essentialSlide from '../essential_slide.png';
 import './EssentialsPage.css';
 
 const EssentialsPage = () => {
@@ -31,7 +32,7 @@ const EssentialsPage = () => {
           <div className="essentials-grid-row">
             <div className="essentials-grid-col">
               <img 
-                src="https://pronk.in/cdn/shop/files/9_803e2367-56e0-446d-a80e-1ca9ba9bc1a4.png?v=1770987176&width=1200" 
+                src={essentialSlide} 
                 alt="PRONK ESSENTIALS Graphic 1" 
                 className="essentials-banner-img"
                 loading="lazy"

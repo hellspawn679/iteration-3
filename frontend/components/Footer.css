@@ -15,12 +15,24 @@
 }
 
 /* Brand column */
-.footer-logo {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--text-primary);
-  margin-bottom: 12px;
+.footer-logo-wrapper {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.footer-logo-img {
+  max-height: 28px;
+  width: auto;
+  display: none;
+}
+
+[data-theme="dark"] .footer-logo-img--white {
+  display: block;
+}
+
+[data-theme="light"] .footer-logo-img--dark {
+  display: block;
 }
 
 .footer-about {

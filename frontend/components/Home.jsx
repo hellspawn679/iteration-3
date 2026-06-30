@@ -10,7 +10,7 @@ import slide1Mobile from '../front_page1_mobile.png';
 import slide2 from '../front_page2.png';
 import slide2Mobile from '../front_page2_mobile.png';
 
-import catOversized from '../goth_category_oversized_1782672438943.png';
+import catOversized from '../overside_t.png';
 import catCargos from '../goth_category_cargos_1782672452829.png';
 import catParachute from '../goth_category_parachute_1782672464088.png';
 import catShirts from '../essential.png';

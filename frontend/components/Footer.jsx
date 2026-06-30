@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { AtSign, Globe, Mail } from 'lucide-react';
+import logoDark from '../logo_dark.png';
+import logoWhite from '../logo_white.png';
 import './Footer.css';
 
 const Footer = () => {
@@ -10,7 +12,10 @@ const Footer = () => {
         <div className="footer-grid">
           {/* Brand & About */}
           <div className="footer-col footer-col--brand">
-            <h3 className="footer-logo">DARTH</h3>
+            <div className="footer-logo-wrapper">
+              <img src={logoWhite} alt="DARTH" className="footer-logo-img footer-logo-img--white" />
+              <img src={logoDark} alt="DARTH" className="footer-logo-img footer-logo-img--dark" />
+            </div>
             <p className="footer-about">
               Gothic streetwear for those who dare to stand out. Premium quality, bold designs.
             </p>

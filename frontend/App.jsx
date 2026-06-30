@@ -41,7 +41,8 @@ const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
 
 import { fetchProducts, fetchCollections, addToCart as shopifyAddToCart } from './utils/shopify';
-import darthLogo from './logo.png';
+import logoDark from './logo_dark.png';
+import logoWhite from './logo_white.png';
 import './App.css';
 
 function App() {
@@ -88,20 +89,13 @@ function App() {
     };
   }, [navigate]);
 
-  // Dark mode is default — read from localStorage, fallback to 'dark'
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('darth-theme') || 'dark';
-  });
+  // Set theme dynamically based on route: Home is light, all other pages are dark
+  const theme = isHome ? 'light' : 'dark';
 
   // Apply theme attribute to <html> whenever theme changes
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('darth-theme', theme);
   }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
 
   useEffect(() => {
     fetchProducts().then(data => {
@@ -174,7 +168,6 @@ function App() {
         cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
         onOpenCart={() => setIsCartOpen(true)}
         theme={theme}
-        onToggleTheme={toggleTheme}
         onOpenSearch={() => setIsSearchOpen(true)}
         isHome={isHome}
       />
@@ -257,7 +250,7 @@ function App() {
           }}
         >
           <div className="transition-logo-container">
-            <img src={darthLogo} alt="Darth Logo" className="transition-logo" />
+            <img src={theme === 'dark' ? logoWhite : logoDark} alt="Darth Logo" className="transition-logo" />
           </div>
         </div>
       )}
